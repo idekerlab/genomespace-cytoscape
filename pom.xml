@@ -32,21 +32,9 @@
 						<Export-Package>!${bundle.namespace}.*</Export-Package>
 						<Private-Package>${bundle.namespace}.*</Private-Package>
 						<Bundle-Activator>${bundle.namespace}.CyActivator</Bundle-Activator>
-						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<Embed-Dependency>*;scope=compile|runtime;type=!pom</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
-						<Import-Package>com.ibm.uvm.tools;resolution:=optional,com.sun.jdmk.comm;resolution:=optional,
-						com.sun.xml.fastinfoset.stax;resolution:=optional,com.sun.xml.fastinfoset.sax;resolution:=optional,
-						javax.jmdns;resolution:=optional,javax.jms;resolution:=optional,javax.mail;resolution:=optional,
-						javax.mail.internet;resolution:=optional,javax.mail.util;resolution:=optional,
-						javax.management;resolution:=optional,javax.naming;resolution:=optional,
-						javax.servlet;resolution:=optional,net.sf.ehcache;resolution:=optional,
-						net.spy.memcached;resolution:=optional,org.apache.log;resolution:=optional,
-						org.joda.time;resolution:=optional,org.joda.time.format;resolution:=optional,
-						org.jvnet.fastinfoset;resolution:=optional,org.jvnet.staxex;resolution:=optional,
-						sun.misc;resolution:=optional,org.aspectj.lang;resolution:=optional,
-						org.aspectj.lang.annotation;resolution:=optional,org.aspectj.lang.reflect;resolution:=optional,
-						org.junit;resolution:=optional,org.junit.rules;resolution:=optional,
-						org.junit.runners;resolution:=optional,org.junit.runners.model;resolution:=optional,*</Import-Package>
+						<Import-Package>*;resolution:=optional</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
