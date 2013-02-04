@@ -76,7 +76,7 @@ public class SaveNetworkToGenomeSpace extends AbstractCyAction {
 			if (!saveFileName.toLowerCase().endsWith("." + networkType))
 				saveFileName += "." + networkType;
 
-			final File localNetworkFile = new File(System.getProperty("java.io.tmpdir"), saveFileName);
+			final File localNetworkFile =File.createTempFile("tempNetwork", networkType);
 			dialogTaskManager.execute(exportNetworkViewTaskFactory.createTaskIterator(cyApplicationManager.getCurrentNetworkView(), localNetworkFile));
 
             GSFileMetadata uploadedFileMetadata = dataManagerClient.uploadFile(localNetworkFile, 
