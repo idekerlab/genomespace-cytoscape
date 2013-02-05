@@ -58,12 +58,10 @@ public class SaveSessionToGenomeSpace extends AbstractCyAction {
 
 			final List<String> acceptableExtensions = new ArrayList<String>();
 			acceptableExtensions.add("cys");
-			System.out.println("Before dialog");
 			final GSFileBrowserDialog dialog =
 				new GSFileBrowserDialog(frame, dataManagerClient,
 							acceptableExtensions,
 							GSFileBrowserDialog.DialogType.SAVE_AS_DIALOG);
-			System.out.println("After dialog");
 			String saveFileName = dialog.getSaveFileName();
 			if (saveFileName == null)
 				return;
@@ -73,13 +71,12 @@ public class SaveSessionToGenomeSpace extends AbstractCyAction {
 				saveFileName += ".cys";
 
 			// Create Task
-			final File tempFile = File.createTempFile("temp", "cysession");
+			final String extension = gsUtils.getExtension(saveFileName);
+			final File tempFile = File.createTempFile("temp", "." + extension);
 			dialogTaskManager.execute(saveSessionAsTaskFactory.createTaskIterator(tempFile));
-			System.out.println("before save");
 			GSFileMetadata uploadedFileMetadata = dataManagerClient.uploadFile(tempFile, 
                    gsUtils.dirName(saveFileName),
                     gsUtils.baseName(saveFileName));
-			System.out.println("After save");
 			
 			tempFile.delete();
 		} catch (final Exception ex) {

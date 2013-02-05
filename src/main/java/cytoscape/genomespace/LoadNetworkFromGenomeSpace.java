@@ -72,8 +72,9 @@ public class LoadNetworkFromGenomeSpace extends AbstractCyAction {
 				dataFormat = gsUtils.findConversionFormat(fileMetadata.getAvailableDataFormats(), "xgmml");
 
 			// Download the GenomeSpace file into a temp file
-			final String fileName = fileMetadata.getName();
-			tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
+			final String origFileName = fileMetadata.getName();
+			final String extension = gsUtils.getExtension(origFileName);
+			tempFile = File.createTempFile("temp", "." + extension);
 			dataManagerClient.downloadFile(fileMetadata, dataFormat, tempFile, true);
 
 			System.out.println("attempting to tmpfile: " + tempFile.getPath());

@@ -54,8 +54,9 @@ public class LoadAttrsFromGenomeSpace extends AbstractCyAction {
 				return;
 
 			// Download the GenomeSpace file:
-			final String fileName = fileMetadata.getName();
-			tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
+			final String origFileName = fileMetadata.getName();
+			final String extension = gsUtils.getExtension(origFileName);
+			tempFile = File.createTempFile("temp", "." + extension);
 			dataManagerClient.downloadFile(fileMetadata, tempFile, true);
 			dialogTaskManager.execute(loadTableFileTaskFactory.createTaskIterator(tempFile));
 		} catch (Exception ex) {
