@@ -51,7 +51,6 @@ final class GSUtils {
 				String gsenv = cytoscapePropertiesServiceRef.getProperties().getProperty("genomespace.environment","test").toString();
 				ConfigurationUrls.init(gsenv);
 				session = new GsSession();
-				session.setClientLoggingEnabled(true);
 			} catch (Exception e) {
 				throw new GSClientException("failed to create GenomeSpace session", e);
 			}
