@@ -1,4 +1,4 @@
-package cytoscape.genomespace;
+package cytoscape.genomespace.action;
 
 
 import java.awt.event.ActionEvent;
@@ -14,14 +14,16 @@ import org.genomespace.client.ui.GSFileBrowserDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cytoscape.genomespace.GSUtils;
 
-public class DeleteFileInGenomeSpace extends AbstractCyAction {
+
+public class DeleteFileInGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 4234432889999989L;
-	private static final Logger logger = LoggerFactory.getLogger(DeleteFileInGenomeSpace.class);
+	private static final Logger logger = LoggerFactory.getLogger(DeleteFileInGenomeSpaceAction.class);
 	private final GSUtils gsUtils;
 	private final JFrame frame;
 	
-	public DeleteFileInGenomeSpace(GSUtils gsUtils, JFrame frame) {
+	public DeleteFileInGenomeSpaceAction(GSUtils gsUtils, JFrame frame) {
 		// Give your action a name here
 		super("Delete File in GenomeSpace");
 

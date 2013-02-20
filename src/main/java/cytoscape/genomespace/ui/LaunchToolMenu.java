@@ -1,6 +1,6 @@
 
 
-package cytoscape.genomespace;
+package cytoscape.genomespace.ui;
 
 
 import javax.swing.JFrame;
@@ -13,6 +13,9 @@ import org.genomespace.atm.model.WebToolDescriptor;
 import org.genomespace.client.GsSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import cytoscape.genomespace.GSUtils;
+import cytoscape.genomespace.action.LaunchToolAction;
 
 
 public class LaunchToolMenu extends JMenu implements MenuListener {

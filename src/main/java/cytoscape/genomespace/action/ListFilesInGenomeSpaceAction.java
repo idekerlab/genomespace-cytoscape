@@ -1,4 +1,4 @@
-package cytoscape.genomespace;
+package cytoscape.genomespace.action;
 
 
 import java.awt.Component;
@@ -21,6 +21,7 @@ import org.genomespace.datamanager.core.GSFileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cytoscape.genomespace.GSUtils;
 import cytoscape.genomespace.filechoosersupport.GenomeSpaceTree;
 
 
@@ -29,13 +30,13 @@ import cytoscape.genomespace.filechoosersupport.GenomeSpaceTree;
  * then fill in your expected behavior in the actionPerformed()
  * method.
  */
-public class ListFilesInGenomeSpace extends AbstractCyAction {
+public class ListFilesInGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 1234487711999989L;
-	private static final Logger logger = LoggerFactory.getLogger(ListFilesInGenomeSpace.class);
+	private static final Logger logger = LoggerFactory.getLogger(ListFilesInGenomeSpaceAction.class);
 	private final GSUtils gsUtils;
 	private final JFrame frame;
 	
-	public ListFilesInGenomeSpace(GSUtils gsUtils, JFrame frame) {
+	public ListFilesInGenomeSpaceAction(GSUtils gsUtils, JFrame frame) {
 		// Give your action a name here
 		super("List Available Files in GenomeSpace");
 

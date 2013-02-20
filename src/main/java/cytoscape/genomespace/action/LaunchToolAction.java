@@ -1,5 +1,5 @@
 
-package cytoscape.genomespace;
+package cytoscape.genomespace.action;
 
 
 import java.awt.event.ActionEvent;

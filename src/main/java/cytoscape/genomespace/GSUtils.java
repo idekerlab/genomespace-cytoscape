@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-final class GSUtils {
+public final class GSUtils {
     static final Logger logger = LoggerFactory.getLogger("CyUserMessages");
 	
     private final CyProperty<Properties> cytoscapePropertiesServiceRef;

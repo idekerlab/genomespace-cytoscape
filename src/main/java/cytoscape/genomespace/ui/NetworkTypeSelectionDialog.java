@@ -1,4 +1,4 @@
-package cytoscape.genomespace;
+package cytoscape.genomespace.ui;
 
 
 import java.awt.BorderLayout;
@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 
-final class NetworkTypeSelectionDialog extends JDialog {
+public final class NetworkTypeSelectionDialog extends JDialog {
 	private String networkType;
 	private final JRadioButton sifRadioButton;
 //	private final JRadioButton nnfRadioButton;
@@ -24,7 +24,7 @@ final class NetworkTypeSelectionDialog extends JDialog {
 	private final JButton okButton;
 	private final JButton cancelButton;
 
-	NetworkTypeSelectionDialog(final Frame owner) {
+	public NetworkTypeSelectionDialog(final Frame owner) {
 		super(owner, /* modal = */ true);
 
 		networkType = null;
@@ -85,7 +85,7 @@ final class NetworkTypeSelectionDialog extends JDialog {
 		setVisible(true);
 	}
 
-	String getNetworkType() {
+	public String getNetworkType() {
 		return networkType;
 	}
 }

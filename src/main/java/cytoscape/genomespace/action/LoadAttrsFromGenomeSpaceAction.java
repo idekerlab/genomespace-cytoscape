@@ -1,4 +1,4 @@
-package cytoscape.genomespace;
+package cytoscape.genomespace.action;
 
 
 import java.awt.event.ActionEvent;
@@ -17,16 +17,18 @@ import org.genomespace.datamanager.core.GSFileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cytoscape.genomespace.GSUtils;
 
-public class LoadAttrsFromGenomeSpace extends AbstractCyAction {
+
+public class LoadAttrsFromGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 7577788473487659L;
-	private static final Logger logger = LoggerFactory.getLogger(LoadNetworkFromGenomeSpace.class);
+	private static final Logger logger = LoggerFactory.getLogger(LoadNetworkFromGenomeSpaceAction.class);
 	private final DialogTaskManager dialogTaskManager;
 	private final LoadTableFileTaskFactory loadTableFileTaskFactory;
 	private final GSUtils gsUtils;
 	private final JFrame frame;
 	
-	public LoadAttrsFromGenomeSpace(DialogTaskManager dialogTaskManager, LoadTableFileTaskFactory loadTableFileTaskFactory, GSUtils gsUtils, JFrame frame) {
+	public LoadAttrsFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, LoadTableFileTaskFactory loadTableFileTaskFactory, GSUtils gsUtils, JFrame frame) {
 		super("Load Attributes...");
 
 		// Set the menu you'd like here.  Plugins don't need

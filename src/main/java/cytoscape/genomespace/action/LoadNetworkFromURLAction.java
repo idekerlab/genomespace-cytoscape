@@ -1,4 +1,4 @@
-package cytoscape.genomespace;
+package cytoscape.genomespace.action;
 
 import java.io.File;
 import java.util.Map;
@@ -11,13 +11,15 @@ import org.genomespace.sws.GSLoadEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoadNetworkFromURL implements GSLoadEventListener {
-	private static final Logger logger = LoggerFactory.getLogger(LoadNetworkFromURL.class);
+import cytoscape.genomespace.GSUtils;
+
+public class LoadNetworkFromURLAction implements GSLoadEventListener {
+	private static final Logger logger = LoggerFactory.getLogger(LoadNetworkFromURLAction.class);
 	private final DialogTaskManager dialogTaskManager;
 	private final LoadNetworkFileTaskFactory loadNetworkFileTaskFactory;
 	private final GSUtils gsUtils;
 	
-	public LoadNetworkFromURL(DialogTaskManager dialogTaskManager, LoadNetworkFileTaskFactory loadNetworkFileTaskFactory, GSUtils gsUtils) {
+	public LoadNetworkFromURLAction(DialogTaskManager dialogTaskManager, LoadNetworkFileTaskFactory loadNetworkFileTaskFactory, GSUtils gsUtils) {
 		this.dialogTaskManager = dialogTaskManager;
 		this.loadNetworkFileTaskFactory = loadNetworkFileTaskFactory;
 		this.gsUtils = gsUtils;

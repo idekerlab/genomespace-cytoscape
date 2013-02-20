@@ -1,4 +1,4 @@
-package cytoscape.genomespace;
+package cytoscape.genomespace.action;
 
 
 import java.awt.FileDialog;
@@ -16,20 +16,22 @@ import org.genomespace.datamanager.core.GSFileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cytoscape.genomespace.GSUtils;
+
 
 /**
  * A simple action.  Change the names as appropriate and
  * then fill in your expected behavior in the actionPerformed()
  * method.
  */
-public class UploadFileToGenomeSpace extends AbstractCyAction {
+public class UploadFileToGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 9988760123456789L;
-	private static final Logger logger = LoggerFactory.getLogger(UploadFileToGenomeSpace.class);
+	private static final Logger logger = LoggerFactory.getLogger(UploadFileToGenomeSpaceAction.class);
 	private final FileUtil fileUtil;
 	private final GSUtils gsUtils;
 	private final JFrame frame;
 	
-	public UploadFileToGenomeSpace(FileUtil fileUtil, GSUtils gsUtils, JFrame frame) {
+	public UploadFileToGenomeSpaceAction(FileUtil fileUtil, GSUtils gsUtils, JFrame frame) {
 		// Give your action a name here
 		super("Upload File");
 

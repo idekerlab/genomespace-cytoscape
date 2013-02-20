@@ -1,4 +1,4 @@
-package cytoscape.genomespace;
+package cytoscape.genomespace.action;
 
 
 import java.awt.event.ActionEvent;
@@ -17,19 +17,21 @@ import org.genomespace.datamanager.core.GSFileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cytoscape.genomespace.GSUtils;
+
 
 /**
  * A simple action.  Change the names as appropriate and
  * then fill in your expected behavior in the actionPerformed()
  * method.
  */
-public class DownloadFileFromGenomeSpace extends AbstractCyAction {
+public class DownloadFileFromGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 7777788473487659L;
-	private static final Logger logger = LoggerFactory.getLogger(DownloadFileFromGenomeSpace.class);
+	private static final Logger logger = LoggerFactory.getLogger(DownloadFileFromGenomeSpaceAction.class);
 	private final GSUtils gsUtils;
 	private final JFrame frame;
 	
-	public DownloadFileFromGenomeSpace(GSUtils gsUtils, JFrame frame) {
+	public DownloadFileFromGenomeSpaceAction(GSUtils gsUtils, JFrame frame) {
 		// Give your action a name here
 		super("Download File...");
 

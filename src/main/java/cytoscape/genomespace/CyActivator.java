@@ -22,6 +22,20 @@ import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.sws.SimpleWebServer;
 import org.osgi.framework.BundleContext;
 
+import cytoscape.genomespace.action.DeleteFileInGenomeSpaceAction;
+import cytoscape.genomespace.action.DownloadFileFromGenomeSpaceAction;
+import cytoscape.genomespace.action.ListFilesInGenomeSpaceAction;
+import cytoscape.genomespace.action.LoadAttrsFromGenomeSpaceAction;
+import cytoscape.genomespace.action.LoadNetworkFromGenomeSpaceAction;
+import cytoscape.genomespace.action.LoadNetworkFromURLAction;
+import cytoscape.genomespace.action.LoadSessionFromGenomeSpaceAction;
+import cytoscape.genomespace.action.LoadSessionFromURLAction;
+import cytoscape.genomespace.action.LoginToGenomeSpaceAction;
+import cytoscape.genomespace.action.SaveNetworkToGenomeSpaceAction;
+import cytoscape.genomespace.action.SaveSessionToGenomeSpaceAction;
+import cytoscape.genomespace.action.UploadFileToGenomeSpaceAction;
+import cytoscape.genomespace.ui.LaunchToolMenu;
+
 
 /**
  * This class is used to instantiate your plugin. Put whatever initialization code
@@ -51,8 +65,8 @@ public class CyActivator extends AbstractCyActivator {
 		GSUtils gsUtils = new GSUtils(cytoscapePropertiesServiceRef, cySwingApplication.getJFrame());
 		JFrame frame = cySwingApplication.getJFrame();
 		// set up the URL loaders
-		LoadNetworkFromURL loadNetworkURL = new LoadNetworkFromURL(dialogTaskManager, loadNetworkFileTaskFactory, gsUtils);
-		LoadSessionFromURL loadSessionURL = new LoadSessionFromURL(dialogTaskManager, openSessionTaskFactory, gsUtils);
+		LoadNetworkFromURLAction loadNetworkURL = new LoadNetworkFromURLAction(dialogTaskManager, loadNetworkFileTaskFactory, gsUtils);
+		LoadSessionFromURLAction loadSessionURL = new LoadSessionFromURLAction(dialogTaskManager, openSessionTaskFactory, gsUtils);
 //		LoadCyTableFromURL loadNodeAttrURL = new LoadCyTableFromURL("node.cytable",Cytoscape.getNodeAttributes());
 //		LoadCyTableFromURL loadEdgeAttrURL = new LoadCyTableFromURL("edge.cytable",Cytoscape.getEdgeAttributes());
 
@@ -64,42 +78,42 @@ public class CyActivator extends AbstractCyActivator {
 		sws.start();
 
 		// This action represents the actual behavior of the plugin.
-		UploadFileToGenomeSpace uploadAction = new UploadFileToGenomeSpace(fileUtil, gsUtils, frame);
+		UploadFileToGenomeSpaceAction uploadAction = new UploadFileToGenomeSpaceAction(fileUtil, gsUtils, frame);
 		registerService(bc,uploadAction,CyAction.class, new Properties());
 
-		DeleteFileInGenomeSpace deleteAction = new DeleteFileInGenomeSpace(gsUtils, frame);
+		DeleteFileInGenomeSpaceAction deleteAction = new DeleteFileInGenomeSpaceAction(gsUtils, frame);
 		registerService(bc,deleteAction,CyAction.class, new Properties());
 
-		DownloadFileFromGenomeSpace downloadAction = new DownloadFileFromGenomeSpace(gsUtils, frame);
+		DownloadFileFromGenomeSpaceAction downloadAction = new DownloadFileFromGenomeSpaceAction(gsUtils, frame);
 		registerService(bc,downloadAction,CyAction.class, new Properties());
 
-		ListFilesInGenomeSpace listAction = new ListFilesInGenomeSpace(gsUtils, frame);
+		ListFilesInGenomeSpaceAction listAction = new ListFilesInGenomeSpaceAction(gsUtils, frame);
 		registerService(bc,listAction,CyAction.class, new Properties());
 
-		LoadNetworkFromGenomeSpace loadNetworkAction = new LoadNetworkFromGenomeSpace(dialogTaskManager, loadNetworkFileTaskFactory, gsUtils, frame);
+		LoadNetworkFromGenomeSpaceAction loadNetworkAction = new LoadNetworkFromGenomeSpaceAction(dialogTaskManager, loadNetworkFileTaskFactory, gsUtils, frame);
 		registerService(bc,loadNetworkAction,CyAction.class, new Properties());
 
-		LoadAttrsFromGenomeSpace loadAttrsAction = new LoadAttrsFromGenomeSpace(dialogTaskManager, loadTableFileTaskFactory, gsUtils, frame);
+		LoadAttrsFromGenomeSpaceAction loadAttrsAction = new LoadAttrsFromGenomeSpaceAction(dialogTaskManager, loadTableFileTaskFactory, gsUtils, frame);
 		registerService(bc,loadAttrsAction,CyAction.class, new Properties());
 
 //		LoadCyTableFromGenomeSpace loadCyTableAction = new LoadCyTableFromGenomeSpace();
 //		Cytoscape.getDesktop().getCyMenus().addAction(loadCyTableAction);
 
 
-		LoadSessionFromGenomeSpace loadSessionAction = new LoadSessionFromGenomeSpace(dialogTaskManager, openSessionTaskFactory, gsUtils, frame);
+		LoadSessionFromGenomeSpaceAction loadSessionAction = new LoadSessionFromGenomeSpaceAction(dialogTaskManager, openSessionTaskFactory, gsUtils, frame);
 		registerService(bc,loadSessionAction,CyAction.class, new Properties());
 
-		SaveSessionToGenomeSpace saveSessionAction = new SaveSessionToGenomeSpace(dialogTaskManager, saveSessionAsTaskFactory, gsUtils, frame);
+		SaveSessionToGenomeSpaceAction saveSessionAction = new SaveSessionToGenomeSpaceAction(dialogTaskManager, saveSessionAsTaskFactory, gsUtils, frame);
 		registerService(bc,saveSessionAction,CyAction.class, new Properties());
 
-		SaveNetworkToGenomeSpace saveNetworkAction = new SaveNetworkToGenomeSpace(cyApplicationManager, dialogTaskManager, exportNetworkViewTaskFactory, gsUtils, frame);
+		SaveNetworkToGenomeSpaceAction saveNetworkAction = new SaveNetworkToGenomeSpaceAction(cyApplicationManager, dialogTaskManager, exportNetworkViewTaskFactory, gsUtils, frame);
 		registerService(bc,saveNetworkAction,CyAction.class, new Properties());
 
 //		LoadOntologyAndAnnotationFromGenomeSpace loadOntologyAndAnnotationFromGenomeSpace =
 //			new LoadOntologyAndAnnotationFromGenomeSpace();
 //		Cytoscape.getDesktop().getCyMenus().addAction(loadOntologyAndAnnotationFromGenomeSpace);
 
-		LoginToGenomeSpace loginToGenomeSpace = new LoginToGenomeSpace(gsUtils);
+		LoginToGenomeSpaceAction loginToGenomeSpace = new LoginToGenomeSpaceAction(gsUtils);
 		registerService(bc,loginToGenomeSpace,CyAction.class, new Properties());
 		
 		JMenu gsMenu = getMenu(cySwingApplication.getJMenuBar(), "File.GenomeSpace");
