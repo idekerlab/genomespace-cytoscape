@@ -3,6 +3,9 @@ package cytoscape.genomespace;
 import java.util.Properties;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CyAction;
@@ -98,10 +101,10 @@ public class CyActivator extends AbstractCyActivator {
 
 		LoginToGenomeSpace loginToGenomeSpace = new LoginToGenomeSpace(gsUtils);
 		registerService(bc,loginToGenomeSpace,CyAction.class, new Properties());
-
-//		JMenu gsMenu = cySwingApplication.getJMenuBar().getMenu("File.GenomeSpace");
-//		LaunchToolMenu ltm = new LaunchToolMenu(gsMenu);
-//		gsMenu.add(ltm);
+		
+		JMenu gsMenu = getMenu(cySwingApplication.getJMenuBar(), "File.GenomeSpace");
+		LaunchToolMenu ltm = new LaunchToolMenu(gsMenu, gsUtils, frame);
+		gsMenu.add(ltm);
 		
 
 		// load any initial arguments
@@ -118,5 +121,44 @@ public class CyActivator extends AbstractCyActivator {
 //			String edgeTableProp = cytoscapePropertiesServiceRef.getProperties().getProperty("edge.cytable");
 //			loadEdgeAttrURL.loadTable(edgeTableProp);
 		}
+	}
+	
+	private JMenu getMenu(JMenuBar menuBar, String name) {
+		String[] path = name.split("\\.");
+		if(path.length < 1) return null;
+		for(int i=0; i<menuBar.getMenuCount(); i++) {
+			JMenu menu = menuBar.getMenu(i);
+			if(menu.getText().equals(path[0])) {
+				if(path.length == 1) return menu;
+				else {
+					int startPos = path[0].length()+1;
+					return (JMenu) getMenuItem(menu,name.substring(startPos));
+				}
+			}
+		}
+		return null;
+	}
+	
+	private JMenu getMenu(JMenu menu, String name) {
+		JMenuItem menuItem = getMenuItem(menu,name);
+		if(menuItem == null || !(menuItem instanceof JMenu)) return null;
+		else return (JMenu) menuItem;
+	}
+	
+	private JMenuItem getMenuItem(JMenu menu, String name) {
+		String[] path = name.split("\\.");
+		if(path.length < 1) return null;
+		for(int i=0; i<menu.getItemCount(); i++){
+			JMenuItem menuItem = menu.getItem(i);
+			if(menuItem.getText().equals(path[0])) {
+				if(path.length == 1) return menuItem;
+				else if(menuItem instanceof JMenu) {
+					int startPos = path[0].length()+1;
+					return getMenuItem((JMenu)menuItem,name.substring(startPos));
+				}
+				else break;
+			}
+		}
+		return null;
 	}
 }

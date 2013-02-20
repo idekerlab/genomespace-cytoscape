@@ -30,19 +30,23 @@ public class LaunchToolMenu extends JMenu implements MenuListener {
 		parent.addMenuListener(this);
 		this.gsUtils = gsUtils;
 		this.frame = frame;
+		initializeMenuState();
 	}
 
 	public void menuCanceled(MenuEvent e) { 
-		removeAll();
 	}
 
 	public void menuDeselected(MenuEvent e) { 
-		removeAll();
 	} 
 
 	public void menuSelected(MenuEvent e) { 
+		initializeMenuState();
+	}
+	
+	private void initializeMenuState() {
 		if ( gsUtils.loggedInToGS() ) {
 			setEnabled(true);
+			if(getItemCount() == 0)
 			try {
 				GsSession session = gsUtils.getSession();
 				for ( WebToolDescriptor webTool : session.getAnalysisToolManagerClient().getWebTools() ) {
@@ -56,6 +60,7 @@ public class LaunchToolMenu extends JMenu implements MenuListener {
 			}
 		} else {
 			setEnabled(false);
+			removeAll();
 		}
 	}
 }

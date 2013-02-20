@@ -39,6 +39,18 @@ final class GSUtils {
 	public GSUtils(CyProperty<Properties> cytoscapePropertiesServiceRef, JFrame frame) {
 		this.cytoscapePropertiesServiceRef = cytoscapePropertiesServiceRef;
 		this.frame = frame;
+		
+		initSession();
+	}
+	
+	private void initSession() {
+		try {
+			String gsenv = cytoscapePropertiesServiceRef.getProperties().getProperty("genomespace.environment","test").toString();
+			ConfigurationUrls.init(gsenv);
+			session = new GsSession();
+		} catch (Exception e) {
+			throw new GSClientException("failed to create GenomeSpace session", e);
+		}
 	}
 
 	public synchronized boolean loggedInToGS() {
@@ -47,13 +59,7 @@ final class GSUtils {
 
 	public synchronized GsSession getSession() {
 		if (session == null ) {
-			try {
-				String gsenv = cytoscapePropertiesServiceRef.getProperties().getProperty("genomespace.environment","test").toString();
-				ConfigurationUrls.init(gsenv);
-				session = new GsSession();
-			} catch (Exception e) {
-				throw new GSClientException("failed to create GenomeSpace session", e);
-			}
+			initSession();
 		}
 
 		if (!session.isLoggedIn()) {
@@ -74,16 +80,14 @@ final class GSUtils {
 				session.logout();
 				logger.info("Logged out of GenomeSpace");
 			} catch (Exception e) { }
-			session = null;
 		}
-
-		getSession();
+		loginToGenomeSpace();
 	}
 
 	public synchronized boolean loginToGenomeSpace() {
 		for (;;) {
 			final GSLoginDialog loginDialog =
-				new GSLoginDialog(null, Dialog.ModalityType.APPLICATION_MODAL);
+				new GSLoginDialog(frame, Dialog.ModalityType.APPLICATION_MODAL);
 			loginDialog.setVisible(true);
 			final String userName = loginDialog.getUsername();
 			final String password = loginDialog.getPassword();
