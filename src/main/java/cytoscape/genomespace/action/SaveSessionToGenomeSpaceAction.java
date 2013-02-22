@@ -11,18 +11,16 @@ import javax.swing.JOptionPane;
 
 import org.cytoscape.application.swing.AbstractCyAction;
 import org.cytoscape.task.write.SaveSessionAsTaskFactory;
-import org.cytoscape.work.Task;
-import org.cytoscape.work.TaskManager;
-import org.cytoscape.work.TaskMonitor;
+import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
 import org.genomespace.client.ui.GSFileBrowserDialog;
-import org.genomespace.datamanager.core.GSFileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.GSUtils;
+import cytoscape.genomespace.task.UploadFileToGenomeSpaceTask;
 
 
 /**
@@ -65,6 +63,7 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 							acceptableExtensions,
 							GSFileBrowserDialog.DialogType.SAVE_AS_DIALOG);
 			String saveFileName = dialog.getSaveFileName();
+			
 			if (saveFileName == null)
 				return;
 
@@ -75,11 +74,10 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 			// Create Task
 			final String extension = gsUtils.getExtension(saveFileName);
 			final File tempFile = File.createTempFile("temp", "." + extension);
-			dialogTaskManager.execute(saveSessionAsTaskFactory.createTaskIterator(tempFile));
-			GSFileMetadata uploadedFileMetadata = dataManagerClient.uploadFile(tempFile, 
-                   gsUtils.dirName(saveFileName),
-                    gsUtils.baseName(saveFileName));
-			
+			TaskIterator ti = saveSessionAsTaskFactory.createTaskIterator(tempFile);
+			ti.append(new UploadFileToGenomeSpaceTask(gsUtils, tempFile, dialog.getSelectedFileMetadata()));
+			dialogTaskManager.execute(ti);
+
 			tempFile.delete();
 		} catch (final Exception ex) {
 			logger.error("GenomeSpace failed", ex);
