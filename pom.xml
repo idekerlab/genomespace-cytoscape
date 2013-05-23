@@ -18,7 +18,6 @@
 	<version>2.0-SNAPSHOT</version>
 
 	<build>
-		<finalName>GenomeSpace</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.felix</groupId>
