@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.AbstractCyAction;
 import org.cytoscape.task.write.ExportNetworkViewTaskFactory;
+import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
@@ -21,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.GSUtils;
+import cytoscape.genomespace.task.UploadFileToGenomeSpaceTask;
 import cytoscape.genomespace.ui.NetworkTypeSelectionDialog;
 
 
@@ -79,13 +81,11 @@ public class SaveNetworkToGenomeSpaceAction extends AbstractCyAction {
 			if (!saveFileName.toLowerCase().endsWith("." + networkType))
 				saveFileName += "." + networkType;
 
-			final File localNetworkFile =File.createTempFile("tempNetwork", networkType);
-			dialogTaskManager.execute(exportNetworkViewTaskFactory.createTaskIterator(cyApplicationManager.getCurrentNetworkView(), localNetworkFile));
-
-            GSFileMetadata uploadedFileMetadata = dataManagerClient.uploadFile(localNetworkFile, 
-			                                                    gsUtils.dirName(saveFileName),
-			                                                    gsUtils.baseName(saveFileName));
-            localNetworkFile.delete();
+			final File tempFile =File.createTempFile("tempNetwork", networkType);
+			TaskIterator ti = exportNetworkViewTaskFactory.createTaskIterator(cyApplicationManager.getCurrentNetworkView(), tempFile);
+			ti.append(new UploadFileToGenomeSpaceTask(gsUtils, tempFile, dialog.getSaveFileName()));
+            dialogTaskManager.execute(ti);
+            tempFile.delete();
 
 		} catch (final Exception ex) {
 			logger.error("GenomeSpace failed", ex);
