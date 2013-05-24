@@ -54,7 +54,7 @@ public class CyActivator extends AbstractCyActivator {
 		CySwingApplication cySwingApplication = getService(bc, CySwingApplication.class);
 		CyApplicationManager cyApplicationManager = getService(bc, CyApplicationManager.class);
 		CyProperty<Properties> cytoscapePropertiesServiceRef = getService(bc, CyProperty.class,
-				"(cyPropertyName=cytoscape3.props)");
+				"(cyPropertyName=commandline.props)");
 		FileUtil fileUtil = getService(bc, FileUtil.class);
 		DialogTaskManager dialogTaskManager = getService(bc, DialogTaskManager.class);
 		LoadTableFileTaskFactory loadTableFileTaskFactory = getService(bc, LoadTableFileTaskFactory.class);
