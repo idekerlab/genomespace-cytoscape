@@ -23,8 +23,6 @@ import org.genomespace.sws.SimpleWebServer;
 import org.osgi.framework.BundleContext;
 
 import cytoscape.genomespace.action.DeleteFileInGenomeSpaceAction;
-import cytoscape.genomespace.action.DownloadFileFromGenomeSpaceAction;
-import cytoscape.genomespace.action.ListFilesInGenomeSpaceAction;
 import cytoscape.genomespace.action.LoadAttrsFromGenomeSpaceAction;
 import cytoscape.genomespace.action.LoadNetworkFromGenomeSpaceAction;
 import cytoscape.genomespace.action.LoadNetworkFromURLAction;
@@ -83,12 +81,6 @@ public class CyActivator extends AbstractCyActivator {
 
 		DeleteFileInGenomeSpaceAction deleteAction = new DeleteFileInGenomeSpaceAction(gsUtils, frame);
 		registerService(bc,deleteAction,CyAction.class, new Properties());
-
-		DownloadFileFromGenomeSpaceAction downloadAction = new DownloadFileFromGenomeSpaceAction(gsUtils, frame);
-		registerService(bc,downloadAction,CyAction.class, new Properties());
-
-		ListFilesInGenomeSpaceAction listAction = new ListFilesInGenomeSpaceAction(gsUtils, frame);
-		registerService(bc,listAction,CyAction.class, new Properties());
 
 		LoadNetworkFromGenomeSpaceAction loadNetworkAction = new LoadNetworkFromGenomeSpaceAction(dialogTaskManager, loadNetworkFileTaskFactory, gsUtils, frame);
 		registerService(bc,loadNetworkAction,CyAction.class, new Properties());
