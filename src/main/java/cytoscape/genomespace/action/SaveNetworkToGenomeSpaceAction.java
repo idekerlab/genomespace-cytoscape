@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.GSUtils;
+import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.UploadFileToGenomeSpaceTask;
 import cytoscape.genomespace.ui.NetworkTypeSelectionDialog;
 
@@ -57,16 +58,16 @@ public class SaveNetworkToGenomeSpaceAction extends AbstractCyAction {
 
 	public void actionPerformed(ActionEvent e) {
 		try {
-			String networkType =
+			String extension =
 				(new NetworkTypeSelectionDialog(frame)).getNetworkType();
-			if (networkType == null)
+			if (extension == null)
 				return;
-			networkType = networkType.toLowerCase();
+			extension = extension.toLowerCase();
 			final GsSession client = gsUtils.getSession();
 			final DataManagerClient dataManagerClient = client.getDataManagerClient();
 
 			final List<String> acceptableExtensions = new ArrayList<String>();
-			acceptableExtensions.add(networkType.toLowerCase());
+			acceptableExtensions.add(extension.toLowerCase());
 			final GSFileBrowserDialog dialog =
 				new GSFileBrowserDialog(frame, dataManagerClient,
 							acceptableExtensions,
@@ -77,15 +78,14 @@ public class SaveNetworkToGenomeSpaceAction extends AbstractCyAction {
 				return;
 
 			// Make sure the file name ends with the network type extension:
-			if (!saveFileName.toLowerCase().endsWith("." + networkType))
-				saveFileName += "." + networkType;
+			if (!saveFileName.toLowerCase().endsWith("." + extension))
+				saveFileName += "." + extension;
 
-			final File tempFile =File.createTempFile("tempNetwork", networkType);
+			final File tempFile =File.createTempFile("tempGS", "." + extension);
 			TaskIterator ti = exportNetworkViewTaskFactory.createTaskIterator(cyApplicationManager.getCurrentNetworkView(), tempFile);
 			ti.append(new UploadFileToGenomeSpaceTask(gsUtils, tempFile, dialog.getSaveFileName()));
             dialogTaskManager.execute(ti);
-            tempFile.delete();
-
+			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
 		} catch (final Exception ex) {
 			logger.error("GenomeSpace failed", ex);
 			JOptionPane.showMessageDialog(frame,

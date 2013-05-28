@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 
 import org.cytoscape.application.swing.AbstractCyAction;
 import org.cytoscape.task.read.OpenSessionTaskFactory;
+import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
@@ -20,6 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.GSUtils;
+import cytoscape.genomespace.task.DeleteFileTask;
+import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
+import cytoscape.genomespace.task.SetFrameSessionTitleTask;
 
 
 public class LoadSessionFromGenomeSpaceAction extends AbstractCyAction {
@@ -63,11 +67,12 @@ public class LoadSessionFromGenomeSpaceAction extends AbstractCyAction {
 			// Download the GenomeSpace file:
 			final String origFileName = fileMetadata.getName();
 			final String extension = gsUtils.getExtension(origFileName);
-			File tempFile = File.createTempFile("temp", "." + extension);
-			dataManagerClient.downloadFile(fileMetadata, tempFile, true);
-
-			dialogTaskManager.execute(openSessionTaskFactory.createTaskIterator(tempFile));
-
+			File tempFile = File.createTempFile("tempGS", "." + extension);
+			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(gsUtils, fileMetadata, tempFile, true));
+			ti.append(openSessionTaskFactory.createTaskIterator(tempFile));
+			ti.append(new SetFrameSessionTitleTask(frame, origFileName));
+			dialogTaskManager.execute(ti);
+			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
 		} catch (Exception ex) {
 			logger.error("GenomeSpace failed", ex);
 			JOptionPane.showMessageDialog(frame,

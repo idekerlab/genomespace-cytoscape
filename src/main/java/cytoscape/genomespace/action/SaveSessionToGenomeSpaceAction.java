@@ -20,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.GSUtils;
+import cytoscape.genomespace.task.DeleteFileTask;
+import cytoscape.genomespace.task.SetFrameSessionTitleTask;
 import cytoscape.genomespace.task.UploadFileToGenomeSpaceTask;
 
 
@@ -72,12 +74,14 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 				saveFileName += ".cys";
 
 			// Create Task
+			final String origFileName = gsUtils.baseName(saveFileName);
 			final String extension = gsUtils.getExtension(saveFileName);
-			final File tempFile = File.createTempFile("temp", "." + extension);
+			final File tempFile = File.createTempFile("tempGS", "." + extension);
 			TaskIterator ti = saveSessionAsTaskFactory.createTaskIterator(tempFile);
 			ti.append(new UploadFileToGenomeSpaceTask(gsUtils, tempFile, dialog.getSaveFileName()));
+			ti.append(new SetFrameSessionTitleTask(frame, origFileName));
 			dialogTaskManager.execute(ti);
-			tempFile.delete();
+			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
 		} catch (final Exception ex) {
 			logger.error("GenomeSpace failed", ex);
 			JOptionPane.showMessageDialog(frame,

@@ -14,15 +14,20 @@ import cytoscape.genomespace.GSUtils;
 public class DownloadFileFromGenomeSpaceTask extends AbstractTask{
 	
 	private GSUtils gsUtils;
-	private GSFileMetadata gsRemoteFile;
+	private GSFileMetadata fileMetadata;
 	private GSDataFormat dataFormat;
 	private File targetLocalFile;
 	private boolean overwriteIfExists;
 	
-	public DownloadFileFromGenomeSpaceTask(GSUtils gsUtils, GSFileMetadata gsRemoteFile, GSDataFormat dataFormat, File targetLocalFile,
+	public DownloadFileFromGenomeSpaceTask(GSUtils gsUtils, GSFileMetadata fileMetadata, File targetLocalFile,
+		    boolean overwriteIfExists) {
+		this(gsUtils, fileMetadata, null, targetLocalFile, overwriteIfExists);
+	}
+	
+	public DownloadFileFromGenomeSpaceTask(GSUtils gsUtils, GSFileMetadata fileMetadata, GSDataFormat dataFormat, File targetLocalFile,
 	    boolean overwriteIfExists) {
 		this.gsUtils = gsUtils;
-		this.gsRemoteFile = gsRemoteFile;
+		this.fileMetadata = fileMetadata;
 		this.dataFormat = dataFormat;
 		this.targetLocalFile = targetLocalFile;
 		this.overwriteIfExists = overwriteIfExists;
@@ -32,8 +37,7 @@ public class DownloadFileFromGenomeSpaceTask extends AbstractTask{
 	public void run(TaskMonitor taskMonitor) throws Exception {
 		final GsSession client = gsUtils.getSession(); 
 		final DataManagerClient dataManagerClient = client.getDataManagerClient();
-		
-		dataManagerClient.downloadFile(gsRemoteFile, dataFormat, targetLocalFile, overwriteIfExists);
+		dataManagerClient.downloadFile(fileMetadata, dataFormat, targetLocalFile, overwriteIfExists);
 	}
 
 }

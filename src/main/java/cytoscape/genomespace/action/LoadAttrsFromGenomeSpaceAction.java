@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import org.cytoscape.application.swing.AbstractCyAction;
 import org.cytoscape.task.read.LoadTableFileTaskFactory;
+import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
@@ -18,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.GSUtils;
+import cytoscape.genomespace.task.DeleteFileTask;
+import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
 
 
 public class LoadAttrsFromGenomeSpaceAction extends AbstractCyAction {
@@ -42,7 +45,6 @@ public class LoadAttrsFromGenomeSpaceAction extends AbstractCyAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		File tempFile = null;
 		try {
 			final GsSession client = gsUtils.getSession(); 
 			final DataManagerClient dataManagerClient = client.getDataManagerClient();
@@ -58,18 +60,17 @@ public class LoadAttrsFromGenomeSpaceAction extends AbstractCyAction {
 			// Download the GenomeSpace file:
 			final String origFileName = fileMetadata.getName();
 			final String extension = gsUtils.getExtension(origFileName);
-			tempFile = File.createTempFile("temp", "." + extension);
-			dataManagerClient.downloadFile(fileMetadata, tempFile, true);
-			dialogTaskManager.execute(loadTableFileTaskFactory.createTaskIterator(tempFile));
+			File tempFile = File.createTempFile("tempGS", "." + extension);
+			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(gsUtils, fileMetadata, tempFile, true));
+			ti.append(loadTableFileTaskFactory.createTaskIterator(tempFile));
+			dialogTaskManager.execute(ti);
+			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
 		} catch (Exception ex) {
 			logger.error("GenomeSpace failed", ex);
 			JOptionPane.showMessageDialog(frame,
 						      ex.getMessage(), "GenomeSpace Error",
 						      JOptionPane.ERROR_MESSAGE);
-		} finally {
-			if (tempFile != null)
-				tempFile.delete();
-		}
+		} 
 	}
 
 }

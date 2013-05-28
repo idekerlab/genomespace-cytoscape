@@ -2,12 +2,6 @@ package cytoscape.genomespace;
 
 
 import java.awt.Dialog;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +12,6 @@ import javax.swing.JOptionPane;
 
 import org.cytoscape.property.CyProperty;
 import org.genomespace.client.ConfigurationUrls;
-import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
 import org.genomespace.client.exceptions.AuthorizationException;
 import org.genomespace.client.exceptions.GSClientException;
@@ -132,45 +125,6 @@ public final class GSUtils {
 				return format;
 
 		return null;
-	}
-
-	public File downloadToTempFile(String urlString) {
-		return downloadToTempFile(urlString,null);
-	}
-
-	public File downloadToTempFile(String urlString, GSDataFormat format) {
-		InputStream is = null;
-		OutputStream os = null;
-		File tempFile = null;
-		try {
-			URL url = new URL(urlString);
-			DataManagerClient dmc = getSession().getDataManagerClient();
-
-			if ( format == null )
-				is = dmc.getInputStream(url);
-			else
-				is = dmc.getInputStream(dmc.getFileUrl(url,format.getUrl()));
-
-			tempFile = File.createTempFile("tempGS","." + getExtension(url.toString()));
-			os =new FileOutputStream(tempFile);
-			byte buf[] = new byte[1024];
-			int len;
-			while( (len = is.read(buf)) > 0 )
-				os.write(buf,0,len);
-		} catch (Exception e) {
-			throw new IllegalArgumentException("failed to load url: " + urlString, e);
-		} finally {
-			try { 
-				if ( is != null )
-					is.close();
-				if ( os != null )
-					os.close();
-			} catch (IOException ioe) {
-				throw new IllegalArgumentException("couldn't even close streams", ioe);
-			}
-		}
-
-		return tempFile;
 	}
 
 	public String getExtension(final String fileName) {
