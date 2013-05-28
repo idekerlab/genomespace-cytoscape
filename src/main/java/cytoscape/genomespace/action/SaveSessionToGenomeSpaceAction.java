@@ -30,7 +30,7 @@ import cytoscape.genomespace.task.UploadFileToGenomeSpaceTask;
  */
 public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 9988760123456789L;
-	private static final Logger logger = LoggerFactory.getLogger(UploadFileToGenomeSpaceAction.class);
+	private static final Logger logger = LoggerFactory.getLogger(SaveSessionToGenomeSpaceAction.class);
 	private final DialogTaskManager dialogTaskManager;
 	private final SaveSessionAsTaskFactory saveSessionAsTaskFactory;
 	private final GSUtils gsUtils;

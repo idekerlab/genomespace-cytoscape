@@ -22,7 +22,6 @@ import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.sws.SimpleWebServer;
 import org.osgi.framework.BundleContext;
 
-import cytoscape.genomespace.action.DeleteFileInGenomeSpaceAction;
 import cytoscape.genomespace.action.LoadAttrsFromGenomeSpaceAction;
 import cytoscape.genomespace.action.LoadNetworkFromGenomeSpaceAction;
 import cytoscape.genomespace.action.LoadNetworkFromURLAction;
@@ -31,7 +30,6 @@ import cytoscape.genomespace.action.LoadSessionFromURLAction;
 import cytoscape.genomespace.action.LoginToGenomeSpaceAction;
 import cytoscape.genomespace.action.SaveNetworkToGenomeSpaceAction;
 import cytoscape.genomespace.action.SaveSessionToGenomeSpaceAction;
-import cytoscape.genomespace.action.UploadFileToGenomeSpaceAction;
 import cytoscape.genomespace.ui.LaunchToolMenu;
 
 
@@ -76,11 +74,6 @@ public class CyActivator extends AbstractCyActivator {
 		sws.start();
 
 		// This action represents the actual behavior of the plugin.
-		UploadFileToGenomeSpaceAction uploadAction = new UploadFileToGenomeSpaceAction(fileUtil, gsUtils, frame);
-		registerService(bc,uploadAction,CyAction.class, new Properties());
-
-		DeleteFileInGenomeSpaceAction deleteAction = new DeleteFileInGenomeSpaceAction(gsUtils, frame);
-		registerService(bc,deleteAction,CyAction.class, new Properties());
 
 		LoadNetworkFromGenomeSpaceAction loadNetworkAction = new LoadNetworkFromGenomeSpaceAction(dialogTaskManager, loadNetworkFileTaskFactory, gsUtils, frame);
 		registerService(bc,loadNetworkAction,CyAction.class, new Properties());

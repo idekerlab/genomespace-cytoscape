@@ -17,7 +17,6 @@ import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
 import org.genomespace.client.ui.GSFileBrowserDialog;
-import org.genomespace.datamanager.core.GSFileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +32,7 @@ import cytoscape.genomespace.ui.NetworkTypeSelectionDialog;
  */
 public class SaveNetworkToGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 9988760123456789L;
-	private static final Logger logger = LoggerFactory.getLogger(UploadFileToGenomeSpaceAction.class);
+	private static final Logger logger = LoggerFactory.getLogger(SaveNetworkToGenomeSpaceAction.class);
 	private final CyApplicationManager cyApplicationManager;
 	private final DialogTaskManager dialogTaskManager;
 	private final ExportNetworkViewTaskFactory exportNetworkViewTaskFactory;
