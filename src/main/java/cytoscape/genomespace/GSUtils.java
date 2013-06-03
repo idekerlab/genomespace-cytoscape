@@ -10,9 +10,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JOptionPane;
 
+import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.property.CyProperty;
 import org.cytoscape.service.util.CyServiceRegistrar;
 import org.genomespace.atm.model.WebToolDescriptor;
@@ -35,14 +36,14 @@ public final class GSUtils implements BundleListener {
     static final Logger logger = LoggerFactory.getLogger("CyUserMessages");
     private final CyProperty<Properties> cytoscapePropertiesServiceRef;
     private final CyServiceRegistrar cyServiceRegistrar;
-    private final JFrame frame;
+    private final CySwingApplication cySwingApp;
     private final Set<LaunchToolAction> launchToolActions;
 	private GsSession session = null;
 	
-	public GSUtils(CyProperty<Properties> cytoscapePropertiesServiceRef, CyServiceRegistrar cyServiceRegistrar, JFrame frame) {
+	public GSUtils(CyProperty<Properties> cytoscapePropertiesServiceRef, CyServiceRegistrar cyServiceRegistrar, CySwingApplication cySwingApp) {
 		this.cytoscapePropertiesServiceRef = cytoscapePropertiesServiceRef;
 		this.cyServiceRegistrar = cyServiceRegistrar;
-		this.frame = frame;
+		this.cySwingApp = cySwingApp;
 		this.launchToolActions = new HashSet<LaunchToolAction>();
 		initSession();
 	}
@@ -52,11 +53,11 @@ public final class GSUtils implements BundleListener {
 			String gsenv = cytoscapePropertiesServiceRef.getProperties().getProperty("genomespace.environment","dev").toString();
 			ConfigurationUrls.init(gsenv);
 			session = new GsSession();
-			if(loggedInToGS()){
-				unregisterLaunchToolActions();
+			if(loggedInToGS())
 				registerLaunchToolActions();
-			}
+			else setLaunchMenuEnabled(false);
 		} catch (Exception e) {
+			System.out.println(e);
 			throw new GSClientException("failed to create GenomeSpace session", e);
 		}
 	}
@@ -66,10 +67,11 @@ public final class GSUtils implements BundleListener {
 			for ( WebToolDescriptor webTool : session.getAnalysisToolManagerClient().getWebTools() ) {
 				if ( webTool.getName().equalsIgnoreCase("cytoscape") )
 					continue;
-				LaunchToolAction action = new LaunchToolAction(webTool, frame);
+				LaunchToolAction action = new LaunchToolAction(webTool, cySwingApp.getJFrame());
 				cyServiceRegistrar.registerAllServices(action, new Properties());
 				launchToolActions.add(action);
 			}
+			setLaunchMenuEnabled(true);
 		} catch (Exception ex) { 
 			logger.warn("problem finding web tools", ex); 
 		}
@@ -81,9 +83,17 @@ public final class GSUtils implements BundleListener {
 				cyServiceRegistrar.unregisterAllServices(i.next());
 				i.remove();
 			}
+			setLaunchMenuEnabled(false);
 		} 
 		catch(Exception ex) {
 			logger.warn("failed to unregister web tool service", ex); 
+		}
+	}
+	
+	private void setLaunchMenuEnabled(boolean enabled) {
+		JMenu launchMenu = cySwingApp.getJMenu("File.GenomeSpace[999].Launch");
+		if ((launchMenu != null)) {
+			launchMenu.setEnabled(enabled);
 		}
 	}
 
@@ -111,7 +121,7 @@ public final class GSUtils implements BundleListener {
 	public synchronized boolean loginToGenomeSpace() {
 		for (;;) {
 			final GSLoginDialog loginDialog =
-				new GSLoginDialog(frame, Dialog.ModalityType.APPLICATION_MODAL);
+				new GSLoginDialog(cySwingApp.getJFrame(), Dialog.ModalityType.APPLICATION_MODAL);
 			loginDialog.setVisible(true);
 			final String userName = loginDialog.getUsername();
 			final String password = loginDialog.getPassword();
@@ -130,13 +140,13 @@ public final class GSUtils implements BundleListener {
 				registerLaunchToolActions();
 				return true;
 			} catch (final AuthorizationException e) {
-				JOptionPane.showMessageDialog(frame,
+				JOptionPane.showMessageDialog(cySwingApp.getJFrame(),
 							      "Invalid user name or password!",
 							      "Login Error",
 							      JOptionPane.ERROR_MESSAGE);
 				continue;
 			} catch (final Exception e) {
-				JOptionPane.showMessageDialog(frame,
+				JOptionPane.showMessageDialog(cySwingApp.getJFrame(),
 							      e.getMessage(),
 							      "Login Error",
 							      JOptionPane.ERROR_MESSAGE);

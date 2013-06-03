@@ -55,7 +55,7 @@ public class CyActivator extends AbstractCyActivator {
 		OpenSessionTaskFactory openSessionTaskFactory = getService(bc, OpenSessionTaskFactory.class);
 		SaveSessionAsTaskFactory saveSessionAsTaskFactory = getService(bc, SaveSessionAsTaskFactory.class);
 		ExportNetworkViewTaskFactory exportNetworkViewTaskFactory = getService(bc, ExportNetworkViewTaskFactory.class);
-		GSUtils gsUtils = new GSUtils(cytoscapePropertiesServiceRef, cyServiceRegistrar, cySwingApplication.getJFrame());
+		GSUtils gsUtils = new GSUtils(cytoscapePropertiesServiceRef, cyServiceRegistrar, cySwingApplication);
 		bc.addBundleListener(gsUtils);
 		JFrame frame = cySwingApplication.getJFrame();
 		// set up the URL loaders

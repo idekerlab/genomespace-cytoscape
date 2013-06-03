@@ -28,7 +28,7 @@ public class LaunchToolAction extends AbstractCyAction {
 
 	public LaunchToolAction(WebToolDescriptor webTool, JFrame frame) {
 		super(webTool.getName());
-		setPreferredMenu("File.GenomeSpace.Launch");
+		setPreferredMenu("File.GenomeSpace[999].Launch[999]");
 		this.webTool = webTool;
 		this.frame = frame;
 	}
