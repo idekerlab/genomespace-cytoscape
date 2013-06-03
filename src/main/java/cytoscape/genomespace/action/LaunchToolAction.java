@@ -4,10 +4,10 @@ package cytoscape.genomespace.action;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import org.cytoscape.application.swing.AbstractCyAction;
 import org.genomespace.atm.model.WebToolDescriptor;
 import org.genomespace.client.ui.BrowserLauncher;
 import org.genomespace.sws.SimpleWebServer;
@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class LaunchToolAction extends AbstractAction {
+public class LaunchToolAction extends AbstractCyAction {
 
 	/**
 	 * 
@@ -28,6 +28,7 @@ public class LaunchToolAction extends AbstractAction {
 
 	public LaunchToolAction(WebToolDescriptor webTool, JFrame frame) {
 		super(webTool.getName());
+		setPreferredMenu("File.GenomeSpace.Launch");
 		this.webTool = webTool;
 		this.frame = frame;
 	}

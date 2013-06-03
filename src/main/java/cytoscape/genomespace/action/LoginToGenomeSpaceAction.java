@@ -26,6 +26,6 @@ public class LoginToGenomeSpaceAction extends AbstractCyAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		gsUtils.reloginToGenomeSpace();	
+		gsUtils.loginToGenomeSpace();	
 	}
 }

@@ -3,15 +3,13 @@ package cytoscape.genomespace;
 import java.util.Properties;
 
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.CyAction;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.property.CyProperty;
 import org.cytoscape.service.util.AbstractCyActivator;
+import org.cytoscape.service.util.CyServiceRegistrar;
 import org.cytoscape.task.read.LoadNetworkFileTaskFactory;
 import org.cytoscape.task.read.LoadTableFileTaskFactory;
 import org.cytoscape.task.read.OpenSessionTaskFactory;
@@ -30,7 +28,6 @@ import cytoscape.genomespace.action.LoadSessionFromURLAction;
 import cytoscape.genomespace.action.LoginToGenomeSpaceAction;
 import cytoscape.genomespace.action.SaveNetworkToGenomeSpaceAction;
 import cytoscape.genomespace.action.SaveSessionToGenomeSpaceAction;
-import cytoscape.genomespace.ui.LaunchToolMenu;
 
 
 /**
@@ -51,14 +48,15 @@ public class CyActivator extends AbstractCyActivator {
 		CyApplicationManager cyApplicationManager = getService(bc, CyApplicationManager.class);
 		CyProperty<Properties> cytoscapePropertiesServiceRef = getService(bc, CyProperty.class,
 				"(cyPropertyName=commandline.props)");
-		FileUtil fileUtil = getService(bc, FileUtil.class);
+		CyServiceRegistrar cyServiceRegistrar = getService(bc, CyServiceRegistrar.class);
 		DialogTaskManager dialogTaskManager = getService(bc, DialogTaskManager.class);
 		LoadTableFileTaskFactory loadTableFileTaskFactory = getService(bc, LoadTableFileTaskFactory.class);
 		LoadNetworkFileTaskFactory loadNetworkFileTaskFactory = getService(bc, LoadNetworkFileTaskFactory.class);
 		OpenSessionTaskFactory openSessionTaskFactory = getService(bc, OpenSessionTaskFactory.class);
 		SaveSessionAsTaskFactory saveSessionAsTaskFactory = getService(bc, SaveSessionAsTaskFactory.class);
 		ExportNetworkViewTaskFactory exportNetworkViewTaskFactory = getService(bc, ExportNetworkViewTaskFactory.class);
-		GSUtils gsUtils = new GSUtils(cytoscapePropertiesServiceRef, cySwingApplication.getJFrame());
+		GSUtils gsUtils = new GSUtils(cytoscapePropertiesServiceRef, cyServiceRegistrar, cySwingApplication.getJFrame());
+		bc.addBundleListener(gsUtils);
 		JFrame frame = cySwingApplication.getJFrame();
 		// set up the URL loaders
 		LoadNetworkFromURLAction loadNetworkURL = new LoadNetworkFromURLAction(dialogTaskManager, loadNetworkFileTaskFactory, gsUtils);
@@ -93,18 +91,13 @@ public class CyActivator extends AbstractCyActivator {
 
 		SaveNetworkToGenomeSpaceAction saveNetworkAction = new SaveNetworkToGenomeSpaceAction(cyApplicationManager, dialogTaskManager, exportNetworkViewTaskFactory, gsUtils, frame);
 		registerService(bc,saveNetworkAction,CyAction.class, new Properties());
-
+		
 //		LoadOntologyAndAnnotationFromGenomeSpace loadOntologyAndAnnotationFromGenomeSpace =
 //			new LoadOntologyAndAnnotationFromGenomeSpace();
 //		Cytoscape.getDesktop().getCyMenus().addAction(loadOntologyAndAnnotationFromGenomeSpace);
 
 		LoginToGenomeSpaceAction loginToGenomeSpace = new LoginToGenomeSpaceAction(gsUtils);
 		registerService(bc,loginToGenomeSpace,CyAction.class, new Properties());
-		
-		JMenu gsMenu = getMenu(cySwingApplication.getJMenuBar(), "File.GenomeSpace");
-		LaunchToolMenu ltm = new LaunchToolMenu(gsMenu, gsUtils, frame);
-		gsMenu.add(ltm);
-		
 
 		// load any initial arguments
 		String sessionProp = cytoscapePropertiesServiceRef.getProperties().getProperty("gs.session");
@@ -120,44 +113,5 @@ public class CyActivator extends AbstractCyActivator {
 //			String edgeTableProp = cytoscapePropertiesServiceRef.getProperties().getProperty("edge.cytable");
 //			loadEdgeAttrURL.loadTable(edgeTableProp);
 		}
-	}
-	
-	private JMenu getMenu(JMenuBar menuBar, String name) {
-		String[] path = name.split("\\.");
-		if(path.length < 1) return null;
-		for(int i=0; i<menuBar.getMenuCount(); i++) {
-			JMenu menu = menuBar.getMenu(i);
-			if(menu.getText().equals(path[0])) {
-				if(path.length == 1) return menu;
-				else {
-					int startPos = path[0].length()+1;
-					return (JMenu) getMenuItem(menu,name.substring(startPos));
-				}
-			}
-		}
-		return null;
-	}
-	
-	private JMenu getMenu(JMenu menu, String name) {
-		JMenuItem menuItem = getMenuItem(menu,name);
-		if(menuItem == null || !(menuItem instanceof JMenu)) return null;
-		else return (JMenu) menuItem;
-	}
-	
-	private JMenuItem getMenuItem(JMenu menu, String name) {
-		String[] path = name.split("\\.");
-		if(path.length < 1) return null;
-		for(int i=0; i<menu.getItemCount(); i++){
-			JMenuItem menuItem = menu.getItem(i);
-			if(menuItem.getText().equals(path[0])) {
-				if(path.length == 1) return menuItem;
-				else if(menuItem instanceof JMenu) {
-					int startPos = path[0].length()+1;
-					return getMenuItem((JMenu)menuItem,name.substring(startPos));
-				}
-				else break;
-			}
-		}
-		return null;
 	}
 }

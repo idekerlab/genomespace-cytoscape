@@ -4,13 +4,18 @@ package cytoscape.genomespace;
 import java.awt.Dialog;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.cytoscape.property.CyProperty;
+import org.cytoscape.service.util.CyServiceRegistrar;
+import org.genomespace.atm.model.WebToolDescriptor;
 import org.genomespace.client.ConfigurationUrls;
 import org.genomespace.client.GsSession;
 import org.genomespace.client.exceptions.AuthorizationException;
@@ -18,31 +23,67 @@ import org.genomespace.client.exceptions.GSClientException;
 import org.genomespace.client.ui.GSLoginDialog;
 import org.genomespace.datamanager.core.GSDataFormat;
 import org.genomespace.datamanager.core.GSFileMetadata;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cytoscape.genomespace.action.LaunchToolAction;
 
-public final class GSUtils {
+
+public final class GSUtils implements BundleListener {
     static final Logger logger = LoggerFactory.getLogger("CyUserMessages");
-	
     private final CyProperty<Properties> cytoscapePropertiesServiceRef;
+    private final CyServiceRegistrar cyServiceRegistrar;
     private final JFrame frame;
+    private final Set<LaunchToolAction> launchToolActions;
 	private GsSession session = null;
 	
-	public GSUtils(CyProperty<Properties> cytoscapePropertiesServiceRef, JFrame frame) {
+	public GSUtils(CyProperty<Properties> cytoscapePropertiesServiceRef, CyServiceRegistrar cyServiceRegistrar, JFrame frame) {
 		this.cytoscapePropertiesServiceRef = cytoscapePropertiesServiceRef;
+		this.cyServiceRegistrar = cyServiceRegistrar;
 		this.frame = frame;
-		
+		this.launchToolActions = new HashSet<LaunchToolAction>();
 		initSession();
 	}
 	
 	private void initSession() {
 		try {
-			String gsenv = cytoscapePropertiesServiceRef.getProperties().getProperty("genomespace.environment","test").toString();
+			String gsenv = cytoscapePropertiesServiceRef.getProperties().getProperty("genomespace.environment","dev").toString();
 			ConfigurationUrls.init(gsenv);
 			session = new GsSession();
+			if(loggedInToGS()){
+				unregisterLaunchToolActions();
+				registerLaunchToolActions();
+			}
 		} catch (Exception e) {
 			throw new GSClientException("failed to create GenomeSpace session", e);
+		}
+	}
+	
+	private void registerLaunchToolActions() {
+		try {
+			for ( WebToolDescriptor webTool : session.getAnalysisToolManagerClient().getWebTools() ) {
+				if ( webTool.getName().equalsIgnoreCase("cytoscape") )
+					continue;
+				LaunchToolAction action = new LaunchToolAction(webTool, frame);
+				cyServiceRegistrar.registerAllServices(action, new Properties());
+				launchToolActions.add(action);
+			}
+		} catch (Exception ex) { 
+			logger.warn("problem finding web tools", ex); 
+		}
+	}
+	
+	private void unregisterLaunchToolActions() {
+		try {
+			for(Iterator<LaunchToolAction> i = launchToolActions.iterator(); i.hasNext();){
+				cyServiceRegistrar.unregisterAllServices(i.next());
+				i.remove();
+			}
+		} 
+		catch(Exception ex) {
+			logger.warn("failed to unregister web tool service", ex); 
 		}
 	}
 
@@ -67,16 +108,6 @@ public final class GSUtils {
 		return session;
 	}
 
-	public synchronized void reloginToGenomeSpace() {
-		if ( session != null && session.isLoggedIn() ) {
-			try { 
-				session.logout();
-				logger.info("Logged out of GenomeSpace");
-			} catch (Exception e) { }
-		}
-		loginToGenomeSpace();
-	}
-
 	public synchronized boolean loginToGenomeSpace() {
 		for (;;) {
 			final GSLoginDialog loginDialog =
@@ -89,8 +120,14 @@ public final class GSUtils {
 			}
 
 			try {
+				if(session.isLoggedIn()) {
+					session.logout();
+					logger.info("Logged out of GenomeSpace");
+				}
+				unregisterLaunchToolActions();
 				session.login(userName, password);
 				logger.info("Logged in to GenomeSpace as: " + userName);
+				registerLaunchToolActions();
 				return true;
 			} catch (final AuthorizationException e) {
 				JOptionPane.showMessageDialog(frame,
@@ -149,6 +186,12 @@ public final class GSUtils {
         final int lastSlashPos = path.lastIndexOf('/');
         return lastSlashPos == -1 ? path : path.substring(lastSlashPos + 1);
     }
+
+	public void bundleChanged(BundleEvent event) {
+		if(event.getType() == BundleEvent.STOPPED) {
+			unregisterLaunchToolActions();
+		}
+	}
 
 }
 
