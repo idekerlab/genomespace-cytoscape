@@ -10,6 +10,7 @@ import org.cytoscape.task.read.OpenSessionTaskFactory;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
+import org.genomespace.client.GsSession;
 import org.genomespace.datamanager.core.GSFileMetadata;
 import org.genomespace.sws.GSLoadEvent;
 import org.genomespace.sws.GSLoadEventListener;
@@ -45,6 +46,8 @@ public class LoadSessionFromURLAction implements GSLoadEventListener {
 			return;
 
 		try {
+			GsSession session = gsUtils.getSession();
+			if(!session.isLoggedIn()) return;
 			DataManagerClient dmc = gsUtils.getSession().getDataManagerClient();
 			GSFileMetadata fileMetadata = dmc.getMetadata(new URL(sessionURL));
 			final String origFileName = fileMetadata.getName();

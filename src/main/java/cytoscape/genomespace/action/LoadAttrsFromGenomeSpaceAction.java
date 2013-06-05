@@ -46,8 +46,9 @@ public class LoadAttrsFromGenomeSpaceAction extends AbstractCyAction {
 
 	public void actionPerformed(ActionEvent e) {
 		try {
-			final GsSession client = gsUtils.getSession(); 
-			final DataManagerClient dataManagerClient = client.getDataManagerClient();
+			final GsSession session = gsUtils.getSession(); 
+			if(!session.isLoggedIn()) return;
+			final DataManagerClient dataManagerClient = session.getDataManagerClient();
 
 			// Select the GenomeSpace file:
 			final GSFileBrowserDialog dialog =

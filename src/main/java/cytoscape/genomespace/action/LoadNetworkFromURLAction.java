@@ -8,6 +8,7 @@ import org.cytoscape.task.read.LoadNetworkFileTaskFactory;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
+import org.genomespace.client.GsSession;
 import org.genomespace.datamanager.core.GSDataFormat;
 import org.genomespace.datamanager.core.GSFileMetadata;
 import org.genomespace.sws.GSLoadEvent;
@@ -42,7 +43,9 @@ public class LoadNetworkFromURLAction implements GSLoadEventListener {
 			return;
 
 		try {
-			DataManagerClient dmc = gsUtils.getSession().getDataManagerClient();
+			GsSession session = gsUtils.getSession();
+			if(!session.isLoggedIn()) return;
+			DataManagerClient dmc = session.getDataManagerClient();
 			final String extension = gsUtils.getExtension(netURL);
             GSDataFormat dataFormat = null; 
 			if ( extension != null && extension.equalsIgnoreCase("adj") )

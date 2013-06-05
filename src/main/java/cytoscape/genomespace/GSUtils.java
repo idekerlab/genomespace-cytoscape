@@ -11,7 +11,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.JMenu;
-import javax.swing.JOptionPane;
 
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.property.CyProperty;
@@ -19,51 +18,42 @@ import org.cytoscape.service.util.CyServiceRegistrar;
 import org.genomespace.atm.model.WebToolDescriptor;
 import org.genomespace.client.ConfigurationUrls;
 import org.genomespace.client.GsSession;
-import org.genomespace.client.exceptions.AuthorizationException;
-import org.genomespace.client.exceptions.GSClientException;
 import org.genomespace.client.ui.GSLoginDialog;
 import org.genomespace.datamanager.core.GSDataFormat;
 import org.genomespace.datamanager.core.GSFileMetadata;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.action.LaunchToolAction;
 
 
-public final class GSUtils implements BundleListener {
+public final class GSUtils {
     static final Logger logger = LoggerFactory.getLogger("CyUserMessages");
-    private final CyProperty<Properties> cytoscapePropertiesServiceRef;
     private final CyServiceRegistrar cyServiceRegistrar;
     private final CySwingApplication cySwingApp;
     private final Set<LaunchToolAction> launchToolActions;
 	private GsSession session = null;
 	
 	public GSUtils(CyProperty<Properties> cytoscapePropertiesServiceRef, CyServiceRegistrar cyServiceRegistrar, CySwingApplication cySwingApp) {
-		this.cytoscapePropertiesServiceRef = cytoscapePropertiesServiceRef;
+		String gsenv = cytoscapePropertiesServiceRef.getProperties().getProperty("genomespace.environment","dev").toString();
+		ConfigurationUrls.init(gsenv);
+		
 		this.cyServiceRegistrar = cyServiceRegistrar;
 		this.cySwingApp = cySwingApp;
+		
 		this.launchToolActions = new HashSet<LaunchToolAction>();
-		initSession();
+		this.session = new GsSession();
+		updateLaunchToolActions();
 	}
 	
-	private void initSession() {
-		try {
-			String gsenv = cytoscapePropertiesServiceRef.getProperties().getProperty("genomespace.environment","dev").toString();
-			ConfigurationUrls.init(gsenv);
-			session = new GsSession();
-			if(loggedInToGS())
-				registerLaunchToolActions();
-			else setLaunchMenuEnabled(false);
-		} catch (Exception e) {
-			System.out.println(e);
-			throw new GSClientException("failed to create GenomeSpace session", e);
+	
+	private void updateLaunchToolActions() {
+		for(Iterator<LaunchToolAction> i = launchToolActions.iterator(); i.hasNext();){
+			cyServiceRegistrar.unregisterAllServices(i.next());
+			i.remove();
 		}
-	}
-	
-	private void registerLaunchToolActions() {
 		try {
+			if(session.isLoggedIn())
 			for ( WebToolDescriptor webTool : session.getAnalysisToolManagerClient().getWebTools() ) {
 				if ( webTool.getName().equalsIgnoreCase("cytoscape") )
 					continue;
@@ -71,87 +61,32 @@ public final class GSUtils implements BundleListener {
 				cyServiceRegistrar.registerAllServices(action, new Properties());
 				launchToolActions.add(action);
 			}
-			setLaunchMenuEnabled(true);
 		} catch (Exception ex) { 
 			logger.warn("problem finding web tools", ex); 
 		}
-	}
-	
-	private void unregisterLaunchToolActions() {
-		try {
-			for(Iterator<LaunchToolAction> i = launchToolActions.iterator(); i.hasNext();){
-				cyServiceRegistrar.unregisterAllServices(i.next());
-				i.remove();
-			}
-			setLaunchMenuEnabled(false);
-		} 
-		catch(Exception ex) {
-			logger.warn("failed to unregister web tool service", ex); 
-		}
-	}
-	
-	private void setLaunchMenuEnabled(boolean enabled) {
 		JMenu launchMenu = cySwingApp.getJMenu("File.GenomeSpace[999].Launch");
 		if ((launchMenu != null)) {
-			launchMenu.setEnabled(enabled);
+			launchMenu.setEnabled(launchMenu.getItemCount() > 0);
 		}
-	}
-
-	public synchronized boolean loggedInToGS() {
-		return (session != null && session.isLoggedIn()); 
 	}
 
 	public synchronized GsSession getSession() {
-		if (session == null ) {
-			initSession();
-		}
-
-		if (!session.isLoggedIn()) {
-			try {
-				if (!loginToGenomeSpace())
-					throw new GSClientException("failed to login!", null);
-			} catch (Exception e) {
-				throw new GSClientException("failed to login", e);
-			}
-		}
-
+		if(!session.isLoggedIn())
+			loginToGenomeSpace();
 		return session;
 	}
 
 	public synchronized boolean loginToGenomeSpace() {
-		for (;;) {
-			final GSLoginDialog loginDialog =
-				new GSLoginDialog(cySwingApp.getJFrame(), Dialog.ModalityType.APPLICATION_MODAL);
-			loginDialog.setVisible(true);
-			final String userName = loginDialog.getUsername();
-			final String password = loginDialog.getPassword();
-			if (userName == null || userName.isEmpty() || password == null || password.isEmpty()) {
-				return false;
-			}
-
-			try {
-				if(session.isLoggedIn()) {
-					session.logout();
-					logger.info("Logged out of GenomeSpace");
-				}
-				unregisterLaunchToolActions();
-				session.login(userName, password);
-				logger.info("Logged in to GenomeSpace as: " + userName);
-				registerLaunchToolActions();
-				return true;
-			} catch (final AuthorizationException e) {
-				JOptionPane.showMessageDialog(cySwingApp.getJFrame(),
-							      "Invalid user name or password!",
-							      "Login Error",
-							      JOptionPane.ERROR_MESSAGE);
-				continue;
-			} catch (final Exception e) {
-				JOptionPane.showMessageDialog(cySwingApp.getJFrame(),
-							      e.getMessage(),
-							      "Login Error",
-							      JOptionPane.ERROR_MESSAGE);
-				return false;
-			}
+		final GSLoginDialog loginDialog =
+			new GSLoginDialog(cySwingApp.getJFrame(), Dialog.ModalityType.APPLICATION_MODAL);
+		loginDialog.setVisible(true);
+		if(loginDialog.getGsSession().isLoggedIn()) {
+			session = loginDialog.getGsSession();
+			updateLaunchToolActions();
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 
@@ -196,12 +131,6 @@ public final class GSUtils implements BundleListener {
         final int lastSlashPos = path.lastIndexOf('/');
         return lastSlashPos == -1 ? path : path.substring(lastSlashPos + 1);
     }
-
-	public void bundleChanged(BundleEvent event) {
-		if(event.getType() == BundleEvent.STOPPED) {
-			unregisterLaunchToolActions();
-		}
-	}
 
 }
 

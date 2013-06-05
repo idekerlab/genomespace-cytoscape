@@ -55,8 +55,9 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 
 	public void actionPerformed(ActionEvent e) {
 		try {
-			final GsSession client = gsUtils.getSession();
-			final DataManagerClient dataManagerClient = client.getDataManagerClient();
+			final GsSession session = gsUtils.getSession();
+			if(!session.isLoggedIn()) return;
+			final DataManagerClient dataManagerClient = session.getDataManagerClient();
 
 			final List<String> acceptableExtensions = new ArrayList<String>();
 			acceptableExtensions.add("cys");

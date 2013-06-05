@@ -15,10 +15,11 @@ import org.cytoscape.task.read.LoadTableFileTaskFactory;
 import org.cytoscape.task.read.OpenSessionTaskFactory;
 import org.cytoscape.task.write.ExportNetworkViewTaskFactory;
 import org.cytoscape.task.write.SaveSessionAsTaskFactory;
-import org.cytoscape.util.swing.FileUtil;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.sws.SimpleWebServer;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
 
 import cytoscape.genomespace.action.LoadAttrsFromGenomeSpaceAction;
 import cytoscape.genomespace.action.LoadNetworkFromGenomeSpaceAction;
@@ -36,8 +37,9 @@ import cytoscape.genomespace.action.SaveSessionToGenomeSpaceAction;
  * The actual functionality of your plugin can be in this class, but should 
  * probably be separated into separted classes that get instantiated here.
  */
-public class CyActivator extends AbstractCyActivator {
-
+public class CyActivator extends AbstractCyActivator implements BundleListener {
+	private SimpleWebServer sws;
+	
 	public CyActivator() {
 		// Properly initializes things.
 		super();
@@ -55,16 +57,17 @@ public class CyActivator extends AbstractCyActivator {
 		OpenSessionTaskFactory openSessionTaskFactory = getService(bc, OpenSessionTaskFactory.class);
 		SaveSessionAsTaskFactory saveSessionAsTaskFactory = getService(bc, SaveSessionAsTaskFactory.class);
 		ExportNetworkViewTaskFactory exportNetworkViewTaskFactory = getService(bc, ExportNetworkViewTaskFactory.class);
-		GSUtils gsUtils = new GSUtils(cytoscapePropertiesServiceRef, cyServiceRegistrar, cySwingApplication);
-		bc.addBundleListener(gsUtils);
 		JFrame frame = cySwingApplication.getJFrame();
+		bc.addBundleListener(this);
+		
+		GSUtils gsUtils = new GSUtils(cytoscapePropertiesServiceRef, cyServiceRegistrar, cySwingApplication);
 		// set up the URL loaders
 		LoadNetworkFromURLAction loadNetworkURL = new LoadNetworkFromURLAction(dialogTaskManager, loadNetworkFileTaskFactory, gsUtils);
 		LoadSessionFromURLAction loadSessionURL = new LoadSessionFromURLAction(dialogTaskManager, openSessionTaskFactory, gsUtils, frame);
 //		LoadCyTableFromURL loadNodeAttrURL = new LoadCyTableFromURL("node.cytable",Cytoscape.getNodeAttributes());
 //		LoadCyTableFromURL loadEdgeAttrURL = new LoadCyTableFromURL("edge.cytable",Cytoscape.getEdgeAttributes());
 
-		SimpleWebServer sws = new SimpleWebServer(60161);
+		sws = new SimpleWebServer(60161);
 		sws.registerListener(loadNetworkURL);
 //		sws.registerListener(loadNodeAttrURL);
 //		sws.registerListener(loadEdgeAttrURL);
@@ -112,6 +115,12 @@ public class CyActivator extends AbstractCyActivator {
 //
 //			String edgeTableProp = cytoscapePropertiesServiceRef.getProperties().getProperty("edge.cytable");
 //			loadEdgeAttrURL.loadTable(edgeTableProp);
+		}
+	}
+
+	public void bundleChanged(BundleEvent event) {
+		if(event.getType()==BundleEvent.STOPPED) {
+			sws.halt();
 		}
 	}
 }

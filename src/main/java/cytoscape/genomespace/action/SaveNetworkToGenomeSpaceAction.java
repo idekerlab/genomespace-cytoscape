@@ -58,14 +58,15 @@ public class SaveNetworkToGenomeSpaceAction extends AbstractCyAction {
 
 	public void actionPerformed(ActionEvent e) {
 		try {
+			final GsSession session = gsUtils.getSession();
+			if(!session.isLoggedIn()) return;
+			final DataManagerClient dataManagerClient = session.getDataManagerClient();
+			
 			String extension =
-				(new NetworkTypeSelectionDialog(frame)).getNetworkType();
-			if (extension == null)
-				return;
-			extension = extension.toLowerCase();
-			final GsSession client = gsUtils.getSession();
-			final DataManagerClient dataManagerClient = client.getDataManagerClient();
-
+					(new NetworkTypeSelectionDialog(frame)).getNetworkType();
+				if (extension == null)
+					return;
+				extension = extension.toLowerCase();
 			final List<String> acceptableExtensions = new ArrayList<String>();
 			acceptableExtensions.add(extension.toLowerCase());
 			final GSFileBrowserDialog dialog =
