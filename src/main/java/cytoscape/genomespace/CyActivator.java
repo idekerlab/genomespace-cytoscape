@@ -37,7 +37,7 @@ import cytoscape.genomespace.action.SaveSessionToGenomeSpaceAction;
  * The actual functionality of your plugin can be in this class, but should 
  * probably be separated into separted classes that get instantiated here.
  */
-public class CyActivator extends AbstractCyActivator implements BundleListener {
+public class CyActivator extends AbstractCyActivator {
 	private SimpleWebServer sws;
 	
 	public CyActivator() {
@@ -58,7 +58,6 @@ public class CyActivator extends AbstractCyActivator implements BundleListener {
 		SaveSessionAsTaskFactory saveSessionAsTaskFactory = getService(bc, SaveSessionAsTaskFactory.class);
 		ExportNetworkViewTaskFactory exportNetworkViewTaskFactory = getService(bc, ExportNetworkViewTaskFactory.class);
 		JFrame frame = cySwingApplication.getJFrame();
-		bc.addBundleListener(this);
 		
 		GSUtils gsUtils = new GSUtils(cytoscapePropertiesServiceRef, cyServiceRegistrar, cySwingApplication);
 		// set up the URL loaders
@@ -66,7 +65,7 @@ public class CyActivator extends AbstractCyActivator implements BundleListener {
 		LoadSessionFromURLAction loadSessionURL = new LoadSessionFromURLAction(dialogTaskManager, openSessionTaskFactory, gsUtils, frame);
 //		LoadCyTableFromURL loadNodeAttrURL = new LoadCyTableFromURL("node.cytable",Cytoscape.getNodeAttributes());
 //		LoadCyTableFromURL loadEdgeAttrURL = new LoadCyTableFromURL("edge.cytable",Cytoscape.getEdgeAttributes());
-
+		
 		sws = new SimpleWebServer(60161);
 		sws.registerListener(loadNetworkURL);
 //		sws.registerListener(loadNodeAttrURL);
@@ -117,10 +116,8 @@ public class CyActivator extends AbstractCyActivator implements BundleListener {
 //			loadEdgeAttrURL.loadTable(edgeTableProp);
 		}
 	}
-
-	public void bundleChanged(BundleEvent event) {
-		if(event.getType()==BundleEvent.STOPPED) {
-			sws.halt();
-		}
+	
+	public void cleanup() {
+		sws.halt();
 	}
 }
