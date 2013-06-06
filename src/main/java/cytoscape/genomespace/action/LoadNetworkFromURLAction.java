@@ -13,15 +13,12 @@ import org.genomespace.datamanager.core.GSDataFormat;
 import org.genomespace.datamanager.core.GSFileMetadata;
 import org.genomespace.sws.GSLoadEvent;
 import org.genomespace.sws.GSLoadEventListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.context.GenomeSpaceContext;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
 
 public class LoadNetworkFromURLAction implements GSLoadEventListener {
-	private static final Logger logger = LoggerFactory.getLogger(LoadNetworkFromURLAction.class);
 	private final DialogTaskManager dialogTaskManager;
 	private final LoadNetworkFileTaskFactory loadNetworkFileTaskFactory;
 	private final GenomeSpaceContext gsContext;

@@ -28,7 +28,7 @@ import cytoscape.genomespace.task.SetFrameSessionTitleTask;
 
 public class LoadSessionFromGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 7577788473487659L;
-	static final Logger logger = LoggerFactory.getLogger(LoadNetworkFromGenomeSpaceAction.class);
+	static final Logger logger = LoggerFactory.getLogger(LoadSessionFromGenomeSpaceAction.class);
 	private final DialogTaskManager dialogTaskManager;
 	private final OpenSessionTaskFactory openSessionTaskFactory;
 	private final GenomeSpaceContext gsContext;

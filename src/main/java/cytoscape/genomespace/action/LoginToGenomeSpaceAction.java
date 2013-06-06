@@ -4,15 +4,12 @@ package cytoscape.genomespace.action;
 import java.awt.event.ActionEvent;
 
 import org.cytoscape.application.swing.AbstractCyAction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.context.GenomeSpaceContext;
 
 
 public class LoginToGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 7577788473487659L;
-	private static final Logger logger = LoggerFactory.getLogger(LoginToGenomeSpaceAction.class);
 	private final GenomeSpaceContext gsContext;
 	
 	public LoginToGenomeSpaceAction(GenomeSpaceContext gsContext) {

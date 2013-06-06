@@ -14,8 +14,6 @@ import org.genomespace.client.GsSession;
 import org.genomespace.datamanager.core.GSFileMetadata;
 import org.genomespace.sws.GSLoadEvent;
 import org.genomespace.sws.GSLoadEventListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.context.GenomeSpaceContext;
 import cytoscape.genomespace.task.DeleteFileTask;
@@ -23,7 +21,6 @@ import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
 import cytoscape.genomespace.task.SetFrameSessionTitleTask;
 
 public class LoadSessionFromURLAction implements GSLoadEventListener {
-	private static final Logger logger = LoggerFactory.getLogger(LoadNetworkFromURLAction.class);
 	private final DialogTaskManager dialogTaskManager;
 	private final OpenSessionTaskFactory openSessionTaskFactory;
 	private final GenomeSpaceContext gsContext;

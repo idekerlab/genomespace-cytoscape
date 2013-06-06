@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.action.LaunchToolAction;
-import cytoscape.genomespace.action.LoadAttrsFromGenomeSpaceAction;
+import cytoscape.genomespace.action.LoadTableFromGenomeSpaceAction;
 import cytoscape.genomespace.action.LoadNetworkFromGenomeSpaceAction;
 import cytoscape.genomespace.action.LoadNetworkFromURLAction;
 import cytoscape.genomespace.action.LoadSessionFromGenomeSpaceAction;
@@ -99,7 +99,7 @@ public class CyActivator extends AbstractCyActivator {
 		LoadNetworkFromGenomeSpaceAction loadNetworkAction = new LoadNetworkFromGenomeSpaceAction(dialogTaskManager, loadNetworkFileTaskFactory, gsContext, frame);
 		registerService(bc,loadNetworkAction,CyAction.class, new Properties());
 
-		LoadAttrsFromGenomeSpaceAction loadAttrsAction = new LoadAttrsFromGenomeSpaceAction(dialogTaskManager, loadTableFileTaskFactory, gsContext, frame);
+		LoadTableFromGenomeSpaceAction loadAttrsAction = new LoadTableFromGenomeSpaceAction(dialogTaskManager, loadTableFileTaskFactory, gsContext, frame);
 		registerService(bc,loadAttrsAction,CyAction.class, new Properties());
 
 //		LoadCyTableFromGenomeSpace loadCyTableAction = new LoadCyTableFromGenomeSpace();

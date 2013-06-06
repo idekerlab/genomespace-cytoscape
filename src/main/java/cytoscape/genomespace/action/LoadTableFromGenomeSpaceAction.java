@@ -23,16 +23,16 @@ import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
 
 
-public class LoadAttrsFromGenomeSpaceAction extends AbstractCyAction {
+public class LoadTableFromGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 7577788473487659L;
-	private static final Logger logger = LoggerFactory.getLogger(LoadNetworkFromGenomeSpaceAction.class);
+	private static final Logger logger = LoggerFactory.getLogger(LoadTableFromGenomeSpaceAction.class);
 	private final DialogTaskManager dialogTaskManager;
 	private final LoadTableFileTaskFactory loadTableFileTaskFactory;
 	private final GenomeSpaceContext gsContext;
 	private final JFrame frame;
 	
-	public LoadAttrsFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, LoadTableFileTaskFactory loadTableFileTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
-		super("Load Attributes...");
+	public LoadTableFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, LoadTableFileTaskFactory loadTableFileTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
+		super("Load Table...");
 
 		// Set the menu you'd like here.  Plugins don't need
 		// to live in the Plugins menu, so choose whatever
