@@ -20,10 +20,10 @@ import org.genomespace.client.ui.GSFileBrowserDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cytoscape.genomespace.context.GenomeSpaceContext;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.UploadFileToGenomeSpaceTask;
 import cytoscape.genomespace.ui.NetworkTypeSelectionDialog;
-import cytoscape.genomespace.util.GSUtils;
 
 
 /**
@@ -37,11 +37,11 @@ public class SaveNetworkToGenomeSpaceAction extends AbstractCyAction {
 	private final CyApplicationManager cyApplicationManager;
 	private final DialogTaskManager dialogTaskManager;
 	private final ExportNetworkViewTaskFactory exportNetworkViewTaskFactory;
-	private final GSUtils gsUtils;
+	private final GenomeSpaceContext gsContext;
 	private final JFrame frame;
 	
 	
-	public SaveNetworkToGenomeSpaceAction(CyApplicationManager cyApplicationManager, DialogTaskManager dialogTaskManager, ExportNetworkViewTaskFactory exportNetworkViewTaskFactory, GSUtils gsUtils, JFrame frame) {
+	public SaveNetworkToGenomeSpaceAction(CyApplicationManager cyApplicationManager, DialogTaskManager dialogTaskManager, ExportNetworkViewTaskFactory exportNetworkViewTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
 		// Give your action a name here
 		super("Save Network As");
 
@@ -52,14 +52,14 @@ public class SaveNetworkToGenomeSpaceAction extends AbstractCyAction {
 		this.cyApplicationManager = cyApplicationManager;
 		this.dialogTaskManager = dialogTaskManager;
 		this.exportNetworkViewTaskFactory = exportNetworkViewTaskFactory;
-		this.gsUtils = gsUtils;
+		this.gsContext = gsContext;
 		this.frame = frame;
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		try {
-			final GsSession session = gsUtils.getSession();
-			if(!session.isLoggedIn()) return;
+			if(!gsContext.loginIfNotAlready()) return;
+			final GsSession session = gsContext.getSession();
 			final DataManagerClient dataManagerClient = session.getDataManagerClient();
 			
 			String extension =
@@ -84,7 +84,7 @@ public class SaveNetworkToGenomeSpaceAction extends AbstractCyAction {
 
 			final File tempFile =File.createTempFile("tempGS", "." + extension);
 			TaskIterator ti = exportNetworkViewTaskFactory.createTaskIterator(cyApplicationManager.getCurrentNetworkView(), tempFile);
-			ti.append(new UploadFileToGenomeSpaceTask(gsUtils, tempFile, dialog.getSaveFileName()));
+			ti.append(new UploadFileToGenomeSpaceTask(gsContext, tempFile, dialog.getSaveFileName()));
             dialogTaskManager.execute(ti);
 			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
 		} catch (final Exception ex) {

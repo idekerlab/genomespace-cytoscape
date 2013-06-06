@@ -1,75 +1,46 @@
-package cytoscape.genomespace.util;
+package cytoscape.genomespace.context;
 
 
 import java.awt.Dialog;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import javax.swing.JMenu;
 
 import org.cytoscape.application.swing.CySwingApplication;
-import org.cytoscape.service.util.CyServiceRegistrar;
-import org.genomespace.atm.model.WebToolDescriptor;
 import org.genomespace.client.GsSession;
 import org.genomespace.client.ui.GSLoginDialog;
 import org.genomespace.datamanager.core.GSDataFormat;
 import org.genomespace.datamanager.core.GSFileMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import cytoscape.genomespace.action.LaunchToolAction;
+import cytoscape.genomespace.CyActivator;
 
 
-public final class GSUtils {
-    static final Logger logger = LoggerFactory.getLogger("CyUserMessages");
+public final class GenomeSpaceContext {
     private final CySwingApplication cySwingApp;
+    private final CyActivator cyActivator;
 	private GsSession session = new GsSession();
 	
-	public GSUtils(CySwingApplication cySwingApp) {
+	public GenomeSpaceContext(CySwingApplication cySwingApp, CyActivator cyActivator) {
 		this.cySwingApp = cySwingApp;
+		this.cyActivator = cyActivator;
 	}
-	
-	
-//	private void updateLaunchToolActions() {
-//		for(Iterator<LaunchToolAction> i = launchToolActions.iterator(); i.hasNext();){
-//			cyServiceRegistrar.unregisterAllServices(i.next());
-//			i.remove();
-//		}
-//		try {
-//			if(session.isLoggedIn())
-//			for ( WebToolDescriptor webTool : session.getAnalysisToolManagerClient().getWebTools() ) {
-//				if ( webTool.getName().equalsIgnoreCase("cytoscape") )
-//					continue;
-//				LaunchToolAction action = new LaunchToolAction(webTool, cySwingApp.getJFrame());
-//				cyServiceRegistrar.registerAllServices(action, new Properties());
-//				launchToolActions.add(action);
-//			}
-//		} catch (Exception ex) { 
-//			logger.warn("problem finding web tools", ex); 
-//		}
-//		JMenu launchMenu = cySwingApp.getJMenu("File.GenomeSpace[999].Launch");
-//		if ((launchMenu != null)) {
-//			launchMenu.setEnabled(launchMenu.getItemCount() > 0);
-//		}
-//	}
 
 	public synchronized GsSession getSession() {
-		if(!session.isLoggedIn())
-			loginToGenomeSpace();
 		return session;
 	}
+	
+	public synchronized boolean loginIfNotAlready() {
+		if(session.isLoggedIn()) return true;
+		else return login();
+	}
 
-	public synchronized boolean loginToGenomeSpace() {
+	public synchronized boolean login() {
 		final GSLoginDialog loginDialog =
 			new GSLoginDialog(cySwingApp.getJFrame(), Dialog.ModalityType.APPLICATION_MODAL);
 		loginDialog.setVisible(true);
 		if(loginDialog.getGsSession().isLoggedIn()) {
 			session = loginDialog.getGsSession();
+			cyActivator.updateMenus(session);
 			return true;
 		}
 		else {

@@ -16,20 +16,20 @@ import org.genomespace.sws.GSLoadEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cytoscape.genomespace.context.GenomeSpaceContext;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
-import cytoscape.genomespace.util.GSUtils;
 
 public class LoadNetworkFromURLAction implements GSLoadEventListener {
 	private static final Logger logger = LoggerFactory.getLogger(LoadNetworkFromURLAction.class);
 	private final DialogTaskManager dialogTaskManager;
 	private final LoadNetworkFileTaskFactory loadNetworkFileTaskFactory;
-	private final GSUtils gsUtils;
+	private final GenomeSpaceContext gsContext;
 	
-	public LoadNetworkFromURLAction(DialogTaskManager dialogTaskManager, LoadNetworkFileTaskFactory loadNetworkFileTaskFactory, GSUtils gsUtils) {
+	public LoadNetworkFromURLAction(DialogTaskManager dialogTaskManager, LoadNetworkFileTaskFactory loadNetworkFileTaskFactory, GenomeSpaceContext gsContext) {
 		this.dialogTaskManager = dialogTaskManager;
 		this.loadNetworkFileTaskFactory = loadNetworkFileTaskFactory;
-		this.gsUtils = gsUtils;
+		this.gsContext = gsContext;
 	}
 	
 	public void onLoadEvent(GSLoadEvent event) {
@@ -43,16 +43,16 @@ public class LoadNetworkFromURLAction implements GSLoadEventListener {
 			return;
 
 		try {
-			GsSession session = gsUtils.getSession();
-			if(!session.isLoggedIn()) return;
+			if(!gsContext.loginIfNotAlready()) return;
+			GsSession session = gsContext.getSession();
 			DataManagerClient dmc = session.getDataManagerClient();
-			final String extension = gsUtils.getExtension(netURL);
+			final String extension = gsContext.getExtension(netURL);
             GSDataFormat dataFormat = null; 
 			if ( extension != null && extension.equalsIgnoreCase("adj") )
-				dataFormat = gsUtils.findConversionFormat(gsUtils.getSession().getDataManagerClient().listDataFormats(), "xgmml");
+				dataFormat = gsContext.findConversionFormat(gsContext.getSession().getDataManagerClient().listDataFormats(), "xgmml");
 			GSFileMetadata fileMetadata = dmc.getMetadata(new URL(netURL));
 			File tempFile = File.createTempFile("tempGS","." + extension);
-			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(gsUtils, fileMetadata, dataFormat, tempFile, true));
+			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(gsContext, fileMetadata, dataFormat, tempFile, true));
 			ti.append(loadNetworkFileTaskFactory.createTaskIterator(tempFile));
 			dialogTaskManager.execute(ti);
 			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));

@@ -20,10 +20,10 @@ import org.genomespace.datamanager.core.GSFileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cytoscape.genomespace.context.GenomeSpaceContext;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
 import cytoscape.genomespace.task.SetFrameSessionTitleTask;
-import cytoscape.genomespace.util.GSUtils;
 
 
 public class LoadSessionFromGenomeSpaceAction extends AbstractCyAction {
@@ -31,11 +31,11 @@ public class LoadSessionFromGenomeSpaceAction extends AbstractCyAction {
 	static final Logger logger = LoggerFactory.getLogger(LoadNetworkFromGenomeSpaceAction.class);
 	private final DialogTaskManager dialogTaskManager;
 	private final OpenSessionTaskFactory openSessionTaskFactory;
-	private final GSUtils gsUtils;
+	private final GenomeSpaceContext gsContext;
 	private final JFrame frame;
 	
 	
-	public LoadSessionFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, OpenSessionTaskFactory openSessionTaskFactory, GSUtils gsUtils, JFrame frame) {
+	public LoadSessionFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, OpenSessionTaskFactory openSessionTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
 		super("Load Session...");
 
 		// Set the menu you'd like here.  Plugins don't need
@@ -44,14 +44,14 @@ public class LoadSessionFromGenomeSpaceAction extends AbstractCyAction {
 		setPreferredMenu("File.Import.GenomeSpace");
 		this.dialogTaskManager = dialogTaskManager;
 		this.openSessionTaskFactory = openSessionTaskFactory;
-		this.gsUtils = gsUtils;
+		this.gsContext = gsContext;
 		this.frame = frame;
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		try {
-			final GsSession session = gsUtils.getSession();
-			if(!session.isLoggedIn()) return;
+			if(!gsContext.loginIfNotAlready()) return;
+			final GsSession session = gsContext.getSession();
 			final DataManagerClient dataManagerClient = session.getDataManagerClient();
 
 			// Select the GenomeSpace file:
@@ -67,9 +67,9 @@ public class LoadSessionFromGenomeSpaceAction extends AbstractCyAction {
 
 			// Download the GenomeSpace file:
 			final String origFileName = fileMetadata.getName();
-			final String extension = gsUtils.getExtension(origFileName);
+			final String extension = gsContext.getExtension(origFileName);
 			File tempFile = File.createTempFile("tempGS", "." + extension);
-			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(gsUtils, fileMetadata, tempFile, true));
+			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(gsContext, fileMetadata, tempFile, true));
 			ti.append(openSessionTaskFactory.createTaskIterator(tempFile));
 			ti.append(new SetFrameSessionTitleTask(frame, origFileName));
 			dialogTaskManager.execute(ti);

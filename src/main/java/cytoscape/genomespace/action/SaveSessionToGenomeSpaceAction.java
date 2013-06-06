@@ -19,10 +19,10 @@ import org.genomespace.client.ui.GSFileBrowserDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cytoscape.genomespace.context.GenomeSpaceContext;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.SetFrameSessionTitleTask;
 import cytoscape.genomespace.task.UploadFileToGenomeSpaceTask;
-import cytoscape.genomespace.util.GSUtils;
 
 
 /**
@@ -35,11 +35,11 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 	private static final Logger logger = LoggerFactory.getLogger(SaveSessionToGenomeSpaceAction.class);
 	private final DialogTaskManager dialogTaskManager;
 	private final SaveSessionAsTaskFactory saveSessionAsTaskFactory;
-	private final GSUtils gsUtils;
+	private final GenomeSpaceContext gsContext;
 	private final JFrame frame;
 	
 	
-	public SaveSessionToGenomeSpaceAction(DialogTaskManager dialogTaskManager, SaveSessionAsTaskFactory saveSessionAsTaskFactory, GSUtils gsUtils, JFrame frame) {
+	public SaveSessionToGenomeSpaceAction(DialogTaskManager dialogTaskManager, SaveSessionAsTaskFactory saveSessionAsTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
 		// Give your action a name here
 		super("Save Session As");
 
@@ -49,14 +49,14 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 		setPreferredMenu("File.Export.GenomeSpace");
 		this.dialogTaskManager = dialogTaskManager;
 		this.saveSessionAsTaskFactory = saveSessionAsTaskFactory;
-		this.gsUtils = gsUtils;
+		this.gsContext = gsContext;
 		this.frame = frame;
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		try {
-			final GsSession session = gsUtils.getSession();
-			if(!session.isLoggedIn()) return;
+			if(!gsContext.loginIfNotAlready()) return;
+			final GsSession session = gsContext.getSession();
 			final DataManagerClient dataManagerClient = session.getDataManagerClient();
 
 			final List<String> acceptableExtensions = new ArrayList<String>();
@@ -75,11 +75,11 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 				saveFileName += ".cys";
 
 			// Create Task
-			final String origFileName = gsUtils.baseName(saveFileName);
-			final String extension = gsUtils.getExtension(saveFileName);
+			final String origFileName = gsContext.baseName(saveFileName);
+			final String extension = gsContext.getExtension(saveFileName);
 			final File tempFile = File.createTempFile("tempGS", "." + extension);
 			TaskIterator ti = saveSessionAsTaskFactory.createTaskIterator(tempFile);
-			ti.append(new UploadFileToGenomeSpaceTask(gsUtils, tempFile, dialog.getSaveFileName()));
+			ti.append(new UploadFileToGenomeSpaceTask(gsContext, tempFile, dialog.getSaveFileName()));
 			ti.append(new SetFrameSessionTitleTask(frame, origFileName));
 			dialogTaskManager.execute(ti);
 			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));

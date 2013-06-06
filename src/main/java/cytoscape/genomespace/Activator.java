@@ -8,7 +8,6 @@ public class Activator implements BundleActivator {
 	private CyActivator cyActivator = new CyActivator();
 
 	public void start(BundleContext bc) throws Exception {
-
 		cyActivator.start(bc);
 	}
 

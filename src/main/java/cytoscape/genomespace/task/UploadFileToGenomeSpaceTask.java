@@ -7,23 +7,23 @@ import org.cytoscape.work.TaskMonitor;
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
 
-import cytoscape.genomespace.util.GSUtils;
+import cytoscape.genomespace.context.GenomeSpaceContext;
 
 public class UploadFileToGenomeSpaceTask extends AbstractTask {
 	
-	private GSUtils gsUtils;
+	private GenomeSpaceContext gsContext;
 	private File localFile;
 	private String remoteFile;
 	
-	public UploadFileToGenomeSpaceTask(GSUtils gsUtils, File localFile, String remoteFile) {
-		this.gsUtils = gsUtils;
+	public UploadFileToGenomeSpaceTask(GenomeSpaceContext gsContext, File localFile, String remoteFile) {
+		this.gsContext = gsContext;
 		this.localFile = localFile;
 		this.remoteFile = remoteFile;
 	}
 	
 	@Override
 	public void run(TaskMonitor taskMonitor) throws Exception {
-		final GsSession client = gsUtils.getSession(); 
+		final GsSession client = gsContext.getSession(); 
 		final DataManagerClient dataManagerClient = client.getDataManagerClient();
 		dataManagerClient.uploadFile(localFile, remoteFile);
 	}

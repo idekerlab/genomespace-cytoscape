@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 //	public void actionPerformed(ActionEvent e) {
 //		File tempFile = null;
 //		try {
-//			final GsSession client = GSUtils.getSession(); 
+//			final GsSession client = gsContext.getSession(); 
 //			final DataManagerClient dataManagerClient = client.getDataManagerClient();
 //
 //			// Select the GenomeSpace file:
