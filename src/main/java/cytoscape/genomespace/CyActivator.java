@@ -2,8 +2,6 @@ package cytoscape.genomespace;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Properties;
 import java.util.Set;
 
@@ -31,11 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.action.LaunchToolAction;
-import cytoscape.genomespace.action.LoadTableFromGenomeSpaceAction;
 import cytoscape.genomespace.action.LoadNetworkFromGenomeSpaceAction;
 import cytoscape.genomespace.action.LoadNetworkFromURLAction;
 import cytoscape.genomespace.action.LoadSessionFromGenomeSpaceAction;
 import cytoscape.genomespace.action.LoadSessionFromURLAction;
+import cytoscape.genomespace.action.LoadTableFromGenomeSpaceAction;
 import cytoscape.genomespace.action.LoginToGenomeSpaceAction;
 import cytoscape.genomespace.action.SaveNetworkToGenomeSpaceAction;
 import cytoscape.genomespace.action.SaveSessionToGenomeSpaceAction;
