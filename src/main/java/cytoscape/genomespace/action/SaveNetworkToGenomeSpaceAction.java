@@ -84,7 +84,7 @@ public class SaveNetworkToGenomeSpaceAction extends AbstractCyAction {
 
 			final File tempFile =File.createTempFile("tempGS", "." + extension);
 			TaskIterator ti = exportNetworkViewTaskFactory.createTaskIterator(cyApplicationManager.getCurrentNetworkView(), tempFile);
-			ti.append(new UploadFileToGenomeSpaceTask(gsContext, tempFile, dialog.getSaveFileName()));
+			ti.append(new UploadFileToGenomeSpaceTask(session, tempFile, dialog.getSaveFileName()));
             dialogTaskManager.execute(ti);
 			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
 		} catch (final Exception ex) {

@@ -9,24 +9,22 @@ import org.genomespace.client.GsSession;
 import org.genomespace.datamanager.core.GSDataFormat;
 import org.genomespace.datamanager.core.GSFileMetadata;
 
-import cytoscape.genomespace.context.GenomeSpaceContext;
-
 public class DownloadFileFromGenomeSpaceTask extends AbstractTask{
 	
-	private GenomeSpaceContext gsContext;
+	private GsSession session;
 	private GSFileMetadata fileMetadata;
 	private GSDataFormat dataFormat;
 	private File targetLocalFile;
 	private boolean overwriteIfExists;
 	
-	public DownloadFileFromGenomeSpaceTask(GenomeSpaceContext gsContext, GSFileMetadata fileMetadata, File targetLocalFile,
+	public DownloadFileFromGenomeSpaceTask(GsSession session, GSFileMetadata fileMetadata, File targetLocalFile,
 		    boolean overwriteIfExists) {
-		this(gsContext, fileMetadata, null, targetLocalFile, overwriteIfExists);
+		this(session, fileMetadata, null, targetLocalFile, overwriteIfExists);
 	}
 	
-	public DownloadFileFromGenomeSpaceTask(GenomeSpaceContext gsContext, GSFileMetadata fileMetadata, GSDataFormat dataFormat, File targetLocalFile,
+	public DownloadFileFromGenomeSpaceTask(GsSession session, GSFileMetadata fileMetadata, GSDataFormat dataFormat, File targetLocalFile,
 	    boolean overwriteIfExists) {
-		this.gsContext = gsContext;
+		this.session = session;
 		this.fileMetadata = fileMetadata;
 		this.dataFormat = dataFormat;
 		this.targetLocalFile = targetLocalFile;
@@ -35,8 +33,7 @@ public class DownloadFileFromGenomeSpaceTask extends AbstractTask{
 	
 	@Override
 	public void run(TaskMonitor taskMonitor) throws Exception {
-		final GsSession client = gsContext.getSession(); 
-		final DataManagerClient dataManagerClient = client.getDataManagerClient();
+		final DataManagerClient dataManagerClient = session.getDataManagerClient();
 		dataManagerClient.downloadFile(fileMetadata, dataFormat, targetLocalFile, overwriteIfExists);
 	}
 

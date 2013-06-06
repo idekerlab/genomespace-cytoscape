@@ -52,7 +52,7 @@ public class LoadNetworkFromURLAction implements GSLoadEventListener {
 				dataFormat = gsContext.findConversionFormat(gsContext.getSession().getDataManagerClient().listDataFormats(), "xgmml");
 			GSFileMetadata fileMetadata = dmc.getMetadata(new URL(netURL));
 			File tempFile = File.createTempFile("tempGS","." + extension);
-			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(gsContext, fileMetadata, dataFormat, tempFile, true));
+			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(session, fileMetadata, dataFormat, tempFile, true));
 			ti.append(loadNetworkFileTaskFactory.createTaskIterator(tempFile));
 			dialogTaskManager.execute(ti);
 			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));

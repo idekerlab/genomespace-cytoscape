@@ -69,7 +69,7 @@ public class LoadSessionFromGenomeSpaceAction extends AbstractCyAction {
 			final String origFileName = fileMetadata.getName();
 			final String extension = gsContext.getExtension(origFileName);
 			File tempFile = File.createTempFile("tempGS", "." + extension);
-			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(gsContext, fileMetadata, tempFile, true));
+			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(session, fileMetadata, tempFile, true));
 			ti.append(openSessionTaskFactory.createTaskIterator(tempFile));
 			ti.append(new SetFrameSessionTitleTask(frame, origFileName));
 			dialogTaskManager.execute(ti);
