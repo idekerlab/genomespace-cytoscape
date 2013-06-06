@@ -7,7 +7,7 @@ import org.cytoscape.work.TaskMonitor;
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
 
-import cytoscape.genomespace.GSUtils;
+import cytoscape.genomespace.util.GSUtils;
 
 public class UploadFileToGenomeSpaceTask extends AbstractTask {
 	

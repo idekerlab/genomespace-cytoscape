@@ -20,10 +20,10 @@ import org.genomespace.client.ui.GSFileBrowserDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cytoscape.genomespace.GSUtils;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.UploadFileToGenomeSpaceTask;
 import cytoscape.genomespace.ui.NetworkTypeSelectionDialog;
+import cytoscape.genomespace.util.GSUtils;
 
 
 /**

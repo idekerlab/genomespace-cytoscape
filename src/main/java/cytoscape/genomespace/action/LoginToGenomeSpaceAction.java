@@ -7,7 +7,7 @@ import org.cytoscape.application.swing.AbstractCyAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cytoscape.genomespace.GSUtils;
+import cytoscape.genomespace.util.GSUtils;
 
 
 public class LoginToGenomeSpaceAction extends AbstractCyAction {

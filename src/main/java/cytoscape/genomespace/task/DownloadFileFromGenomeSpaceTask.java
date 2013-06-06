@@ -9,7 +9,7 @@ import org.genomespace.client.GsSession;
 import org.genomespace.datamanager.core.GSDataFormat;
 import org.genomespace.datamanager.core.GSFileMetadata;
 
-import cytoscape.genomespace.GSUtils;
+import cytoscape.genomespace.util.GSUtils;
 
 public class DownloadFileFromGenomeSpaceTask extends AbstractTask{
 	

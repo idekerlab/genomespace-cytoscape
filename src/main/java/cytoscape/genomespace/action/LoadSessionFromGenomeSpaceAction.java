@@ -20,10 +20,10 @@ import org.genomespace.datamanager.core.GSFileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cytoscape.genomespace.GSUtils;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
 import cytoscape.genomespace.task.SetFrameSessionTitleTask;
+import cytoscape.genomespace.util.GSUtils;
 
 
 public class LoadSessionFromGenomeSpaceAction extends AbstractCyAction {

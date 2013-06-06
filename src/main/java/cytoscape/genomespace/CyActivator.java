@@ -16,6 +16,7 @@ import org.cytoscape.task.read.OpenSessionTaskFactory;
 import org.cytoscape.task.write.ExportNetworkViewTaskFactory;
 import org.cytoscape.task.write.SaveSessionAsTaskFactory;
 import org.cytoscape.work.swing.DialogTaskManager;
+import org.genomespace.client.ConfigurationUrls;
 import org.genomespace.sws.SimpleWebServer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -29,6 +30,7 @@ import cytoscape.genomespace.action.LoadSessionFromURLAction;
 import cytoscape.genomespace.action.LoginToGenomeSpaceAction;
 import cytoscape.genomespace.action.SaveNetworkToGenomeSpaceAction;
 import cytoscape.genomespace.action.SaveSessionToGenomeSpaceAction;
+import cytoscape.genomespace.util.GSUtils;
 
 
 /**
@@ -59,7 +61,9 @@ public class CyActivator extends AbstractCyActivator {
 		ExportNetworkViewTaskFactory exportNetworkViewTaskFactory = getService(bc, ExportNetworkViewTaskFactory.class);
 		JFrame frame = cySwingApplication.getJFrame();
 		
-		GSUtils gsUtils = new GSUtils(cytoscapePropertiesServiceRef, cyServiceRegistrar, cySwingApplication);
+		String gsenv = cytoscapePropertiesServiceRef.getProperties().getProperty("genomespace.environment","dev").toString();
+		ConfigurationUrls.init(gsenv);
+		GSUtils gsUtils = new GSUtils(cySwingApplication);
 		// set up the URL loaders
 		LoadNetworkFromURLAction loadNetworkURL = new LoadNetworkFromURLAction(dialogTaskManager, loadNetworkFileTaskFactory, gsUtils);
 		LoadSessionFromURLAction loadSessionURL = new LoadSessionFromURLAction(dialogTaskManager, openSessionTaskFactory, gsUtils, frame);
