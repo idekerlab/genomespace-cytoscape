@@ -53,7 +53,7 @@ public class LoadTableFromGenomeSpaceAction extends AbstractCyAction {
 			// Select the GenomeSpace file:
 			final GSFileBrowserDialog dialog =
 					new GSFileBrowserDialog(frame, dataManagerClient,
-								GSFileBrowserDialog.DialogType.FILE_SELECTION_DIALOG);
+								GSFileBrowserDialog.DialogType.FILE_SELECTION_DIALOG, "Load Table");
 			final GSFileMetadata fileMetadata = dialog.getSelectedFileMetadata();
 			if (fileMetadata == null)
 				return;

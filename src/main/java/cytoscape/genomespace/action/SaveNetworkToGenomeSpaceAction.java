@@ -72,7 +72,7 @@ public class SaveNetworkToGenomeSpaceAction extends AbstractCyAction {
 			final GSFileBrowserDialog dialog =
 				new GSFileBrowserDialog(frame, dataManagerClient,
 							acceptableExtensions,
-							GSFileBrowserDialog.DialogType.SAVE_AS_DIALOG);
+							GSFileBrowserDialog.DialogType.SAVE_AS_DIALOG, "Save Network");
 
 			String saveFileName = dialog.getSaveFileName();
 			if (saveFileName == null)

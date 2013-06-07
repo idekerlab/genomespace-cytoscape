@@ -79,9 +79,10 @@ public final class NetworkTypeSelectionDialog extends JDialog {
 		buttonPane.add(cancelButton);
 
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
-
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		pack();
+		
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setLocationRelativeTo(getParent());
 		setVisible(true);
 	}
 

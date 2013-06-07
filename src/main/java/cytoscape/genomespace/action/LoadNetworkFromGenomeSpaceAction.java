@@ -63,7 +63,8 @@ public class LoadNetworkFromGenomeSpaceAction extends AbstractCyAction {
 			final GSFileBrowserDialog dialog =
 				new GSFileBrowserDialog(frame, dataManagerClient,
 							acceptableExtensions,
-							GSFileBrowserDialog.DialogType.FILE_SELECTION_DIALOG);
+							GSFileBrowserDialog.DialogType.FILE_SELECTION_DIALOG, 
+							"Load Network");
 			final GSFileMetadata fileMetadata = dialog.getSelectedFileMetadata();
 			if (fileMetadata == null)
 				return;

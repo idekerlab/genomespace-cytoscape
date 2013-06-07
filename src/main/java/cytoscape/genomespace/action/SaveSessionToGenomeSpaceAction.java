@@ -64,7 +64,7 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 			final GSFileBrowserDialog dialog =
 				new GSFileBrowserDialog(frame, dataManagerClient,
 							acceptableExtensions,
-							GSFileBrowserDialog.DialogType.SAVE_AS_DIALOG);
+							GSFileBrowserDialog.DialogType.SAVE_AS_DIALOG, "Save Session");
 			String saveFileName = dialog.getSaveFileName();
 			
 			if (saveFileName == null)
