@@ -30,14 +30,13 @@ import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.action.LaunchToolAction;
 import cytoscape.genomespace.action.LoadNetworkFromGenomeSpaceAction;
-import cytoscape.genomespace.action.LoadNetworkFromURLAction;
 import cytoscape.genomespace.action.LoadSessionFromGenomeSpaceAction;
-import cytoscape.genomespace.action.LoadSessionFromURLAction;
 import cytoscape.genomespace.action.LoadTableFromGenomeSpaceAction;
 import cytoscape.genomespace.action.LoginToGenomeSpaceAction;
 import cytoscape.genomespace.action.SaveNetworkToGenomeSpaceAction;
 import cytoscape.genomespace.action.SaveSessionToGenomeSpaceAction;
 import cytoscape.genomespace.context.GenomeSpaceContext;
+import cytoscape.genomespace.event.CytoscapeGSLoadEventListener;
 
 
 /**
@@ -78,16 +77,14 @@ public class CyActivator extends AbstractCyActivator {
 		GenomeSpaceContext gsContext = new GenomeSpaceContext(cySwingApplication, this);
 		
 		// set up the URL loaders
-		LoadNetworkFromURLAction loadNetworkURL = new LoadNetworkFromURLAction(dialogTaskManager, loadNetworkFileTaskFactory, gsContext);
-		LoadSessionFromURLAction loadSessionURL = new LoadSessionFromURLAction(dialogTaskManager, openSessionTaskFactory, gsContext, frame);
+		CytoscapeGSLoadEventListener loadEventListener = new CytoscapeGSLoadEventListener(dialogTaskManager, loadNetworkFileTaskFactory, openSessionTaskFactory, frame, gsContext);
 //		LoadCyTableFromURL loadNodeAttrURL = new LoadCyTableFromURL("node.cytable",Cytoscape.getNodeAttributes());
 //		LoadCyTableFromURL loadEdgeAttrURL = new LoadCyTableFromURL("edge.cytable",Cytoscape.getEdgeAttributes());
 		
 		sws = new SimpleWebServer(60161);
-		sws.registerListener(loadNetworkURL);
+		sws.registerListener(loadEventListener);
 //		sws.registerListener(loadNodeAttrURL);
 //		sws.registerListener(loadEdgeAttrURL);
-		sws.registerListener(loadSessionURL);
 		sws.start();
 		
 		launchToolActions = new HashSet<LaunchToolAction>();
@@ -121,12 +118,10 @@ public class CyActivator extends AbstractCyActivator {
 		registerService(bc,loginToGenomeSpace,CyAction.class, new Properties());
 
 		// load any initial arguments
-		String sessionProp = cytoscapePropertiesServiceRef.getProperties().getProperty("gs.session");
-		if ( sessionProp != null ) {
-			loadSessionURL.loadSession(sessionProp);
+		String loadURLProp = cytoscapePropertiesServiceRef.getProperties().getProperty("gs.network");
+		if ( loadURLProp != null ) {
+			loadEventListener.loadSession(loadURLProp);
 		} else {
-			String networkProp = cytoscapePropertiesServiceRef.getProperties().getProperty("gs.network");
-			loadNetworkURL.loadNetwork(networkProp);
 
 //			String nodeTableProp = cytoscapePropertiesServiceRef.getProperties().getProperty("node.cytable");
 //			loadNodeAttrURL.loadTable(nodeTableProp);
