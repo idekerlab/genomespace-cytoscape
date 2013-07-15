@@ -59,9 +59,8 @@ public class LoadTableFromGenomeSpaceAction extends AbstractCyAction {
 				return;
 
 			// Download the GenomeSpace file:
-			final String origFileName = fileMetadata.getName();
-			final String extension = gsContext.getExtension(origFileName);
-			File tempFile = File.createTempFile("tempGS", "." + extension);
+			final String fileName = fileMetadata.getName();
+			File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
 			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(session, fileMetadata, tempFile, true));
 			ti.append(loadTableFileTaskFactory.createTaskIterator(tempFile));
 			dialogTaskManager.execute(ti);

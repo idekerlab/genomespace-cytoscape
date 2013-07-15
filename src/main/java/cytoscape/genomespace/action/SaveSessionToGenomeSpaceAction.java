@@ -75,12 +75,11 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 				saveFileName += ".cys";
 
 			// Create Task
-			final String origFileName = gsContext.baseName(saveFileName);
-			final String extension = gsContext.getExtension(saveFileName);
-			final File tempFile = File.createTempFile("tempGS", "." + extension);
+			final String fileName = gsContext.baseName(saveFileName);
+			final File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
 			TaskIterator ti = saveSessionAsTaskFactory.createTaskIterator(tempFile);
 			ti.append(new UploadFileToGenomeSpaceTask(session, tempFile, dialog.getSaveFileName()));
-			ti.append(new SetFrameSessionTitleTask(frame, origFileName));
+			ti.append(new SetFrameSessionTitleTask(frame, fileName));
 			dialogTaskManager.execute(ti);
 			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
 		} catch (final Exception ex) {
