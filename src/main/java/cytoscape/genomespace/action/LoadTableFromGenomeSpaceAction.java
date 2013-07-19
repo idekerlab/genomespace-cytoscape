@@ -3,13 +3,17 @@ package cytoscape.genomespace.action;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.cytoscape.application.swing.AbstractCyAction;
-import org.cytoscape.task.read.LoadTableFileTaskFactory;
+import org.cytoscape.work.AbstractTask;
 import org.cytoscape.work.TaskIterator;
+import org.cytoscape.work.TaskMonitor;
+import org.cytoscape.work.TunableSetter;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
@@ -21,17 +25,18 @@ import org.slf4j.LoggerFactory;
 import cytoscape.genomespace.context.GenomeSpaceContext;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
+import cytoscape.genomespace.task.LoadFileTaskFactory;
 
 
 public class LoadTableFromGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 7577788473487659L;
 	private static final Logger logger = LoggerFactory.getLogger(LoadTableFromGenomeSpaceAction.class);
 	private final DialogTaskManager dialogTaskManager;
-	private final LoadTableFileTaskFactory loadTableFileTaskFactory;
+	private final LoadFileTaskFactory loadTableFileTaskFactory;
 	private final GenomeSpaceContext gsContext;
 	private final JFrame frame;
 	
-	public LoadTableFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, LoadTableFileTaskFactory loadTableFileTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
+	public LoadTableFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, LoadFileTaskFactory loadTableFileTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
 		super("Load Table...");
 
 		// Set the menu you'd like here.  Plugins don't need
@@ -59,7 +64,7 @@ public class LoadTableFromGenomeSpaceAction extends AbstractCyAction {
 				return;
 
 			// Download the GenomeSpace file:
-			final String fileName = fileMetadata.getName();
+			String fileName = fileMetadata.getName();
 			File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
 			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(session, fileMetadata, tempFile, true));
 			ti.append(loadTableFileTaskFactory.createTaskIterator(tempFile));

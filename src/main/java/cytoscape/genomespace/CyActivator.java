@@ -19,6 +19,7 @@ import org.cytoscape.task.read.LoadTableFileTaskFactory;
 import org.cytoscape.task.read.OpenSessionTaskFactory;
 import org.cytoscape.task.write.ExportNetworkViewTaskFactory;
 import org.cytoscape.task.write.SaveSessionAsTaskFactory;
+import org.cytoscape.work.TunableSetter;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.atm.model.WebToolDescriptor;
 import org.genomespace.client.ConfigurationUrls;
@@ -37,6 +38,7 @@ import cytoscape.genomespace.action.SaveNetworkToGenomeSpaceAction;
 import cytoscape.genomespace.action.SaveSessionToGenomeSpaceAction;
 import cytoscape.genomespace.context.GenomeSpaceContext;
 import cytoscape.genomespace.event.CytoscapeGSURLHandler;
+import cytoscape.genomespace.task.LoadFileTaskFactory;
 
 
 /**
@@ -68,16 +70,17 @@ public class CyActivator extends AbstractCyActivator {
 		ConfigurationUrls.init(gsenv);
 		
 		DialogTaskManager dialogTaskManager = getService(bc, DialogTaskManager.class);
-		LoadTableFileTaskFactory loadTableFileTaskFactory = getService(bc, LoadTableFileTaskFactory.class);
-		LoadNetworkFileTaskFactory loadNetworkFileTaskFactory = getService(bc, LoadNetworkFileTaskFactory.class);
-		OpenSessionTaskFactory openSessionTaskFactory = getService(bc, OpenSessionTaskFactory.class);
+		TunableSetter tunableSetter = getService(bc, TunableSetter.class);
+		LoadFileTaskFactory loadTableFileTaskFactory = new LoadFileTaskFactory(getService(bc, LoadTableFileTaskFactory.class), tunableSetter);
+		LoadFileTaskFactory loadNetworkFileTaskFactory = new LoadFileTaskFactory(getService(bc, LoadNetworkFileTaskFactory.class), tunableSetter);
+		LoadFileTaskFactory loadSessionFileTaskFactory = new LoadFileTaskFactory(getService(bc, OpenSessionTaskFactory.class), tunableSetter);
 		SaveSessionAsTaskFactory saveSessionAsTaskFactory = getService(bc, SaveSessionAsTaskFactory.class);
 		ExportNetworkViewTaskFactory exportNetworkViewTaskFactory = getService(bc, ExportNetworkViewTaskFactory.class);
 		JFrame frame = cySwingApplication.getJFrame();
 		GenomeSpaceContext gsContext = new GenomeSpaceContext(cySwingApplication, this);
 		
 		// set up the URL loaders
-		CytoscapeGSURLHandler gsUrlHandler = new CytoscapeGSURLHandler(dialogTaskManager, loadNetworkFileTaskFactory, openSessionTaskFactory, frame, gsContext);
+		CytoscapeGSURLHandler gsUrlHandler = new CytoscapeGSURLHandler(dialogTaskManager, loadNetworkFileTaskFactory, loadSessionFileTaskFactory, frame, gsContext);
 //		LoadCyTableFromURL loadNodeAttrURL = new LoadCyTableFromURL("node.cytable",Cytoscape.getNodeAttributes());
 //		LoadCyTableFromURL loadEdgeAttrURL = new LoadCyTableFromURL("edge.cytable",Cytoscape.getEdgeAttributes());
 		
@@ -101,7 +104,7 @@ public class CyActivator extends AbstractCyActivator {
 //		Cytoscape.getDesktop().getCyMenus().addAction(loadCyTableAction);
 
 
-		LoadSessionFromGenomeSpaceAction loadSessionAction = new LoadSessionFromGenomeSpaceAction(dialogTaskManager, openSessionTaskFactory, gsContext, frame);
+		LoadSessionFromGenomeSpaceAction loadSessionAction = new LoadSessionFromGenomeSpaceAction(dialogTaskManager, loadSessionFileTaskFactory, gsContext, frame);
 		registerService(bc,loadSessionAction,CyAction.class, new Properties());
 
 		SaveSessionToGenomeSpaceAction saveSessionAction = new SaveSessionToGenomeSpaceAction(dialogTaskManager, saveSessionAsTaskFactory, gsContext, frame);

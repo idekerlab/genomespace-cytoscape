@@ -6,8 +6,6 @@ import java.util.Map;
 
 import javax.swing.JFrame;
 
-import org.cytoscape.task.read.LoadNetworkFileTaskFactory;
-import org.cytoscape.task.read.OpenSessionTaskFactory;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
@@ -20,20 +18,21 @@ import org.genomespace.sws.GSLoadEventListener;
 import cytoscape.genomespace.context.GenomeSpaceContext;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
+import cytoscape.genomespace.task.LoadFileTaskFactory;
 import cytoscape.genomespace.task.SetFrameSessionTitleTask;
 
 public class CytoscapeGSURLHandler implements GSLoadEventListener {
 	private final DialogTaskManager dialogTaskManager;
-	private final LoadNetworkFileTaskFactory loadNetworkFileTaskFactory;
-	private final OpenSessionTaskFactory openSessionTaskFactory;
+	private final LoadFileTaskFactory loadNetworkFileTaskFactory;
+	private final LoadFileTaskFactory loadSessionFileTaskFactory;
 	private final JFrame frame;
 	private final GenomeSpaceContext gsContext;
 	
-	public CytoscapeGSURLHandler(DialogTaskManager dialogTaskManager, LoadNetworkFileTaskFactory loadNetworkFileTaskFactory, 
-			OpenSessionTaskFactory openSessionTaskFactory, JFrame frame, GenomeSpaceContext gsContext) {
+	public CytoscapeGSURLHandler(DialogTaskManager dialogTaskManager, LoadFileTaskFactory loadNetworkFileTaskFactory, 
+			LoadFileTaskFactory loadSessionFileTaskFactory, JFrame frame, GenomeSpaceContext gsContext) {
 		this.dialogTaskManager = dialogTaskManager;
 		this.loadNetworkFileTaskFactory = loadNetworkFileTaskFactory;
-		this.openSessionTaskFactory = openSessionTaskFactory;
+		this.loadSessionFileTaskFactory = loadSessionFileTaskFactory;
 		this.frame = frame;
 		this.gsContext = gsContext;
 	}
@@ -60,7 +59,7 @@ public class CytoscapeGSURLHandler implements GSLoadEventListener {
 			File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
 			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(session, fileMetadata, dataFormat, tempFile, true));
 			if(extension.equalsIgnoreCase("cys")) {
-				ti.append(openSessionTaskFactory.createTaskIterator(tempFile));
+				ti.append(loadSessionFileTaskFactory.createTaskIterator(tempFile));
 				ti.append(new SetFrameSessionTitleTask(frame, fileName));
 			}
 			else {

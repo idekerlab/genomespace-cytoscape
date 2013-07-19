@@ -10,7 +10,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.cytoscape.application.swing.AbstractCyAction;
-import org.cytoscape.task.read.LoadNetworkFileTaskFactory;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
@@ -24,17 +23,18 @@ import org.slf4j.LoggerFactory;
 import cytoscape.genomespace.context.GenomeSpaceContext;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
+import cytoscape.genomespace.task.LoadFileTaskFactory;
 
 
 public class LoadNetworkFromGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 7577788473487659L;
 	private static final Logger logger = LoggerFactory.getLogger(LoadNetworkFromGenomeSpaceAction.class);
 	private final DialogTaskManager dialogTaskManager;
-	private final LoadNetworkFileTaskFactory loadNetworkFileTaskFactory;
+	private final LoadFileTaskFactory loadNetworkFileTaskFactory;
 	private final GenomeSpaceContext gsContext;
 	private final JFrame frame;
 
-	public LoadNetworkFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, LoadNetworkFileTaskFactory loadNetworkFileTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
+	public LoadNetworkFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, LoadFileTaskFactory loadNetworkFileTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
 		super("Load Network...");
 
 		// Set the menu you'd like here.  Plugins don't need
