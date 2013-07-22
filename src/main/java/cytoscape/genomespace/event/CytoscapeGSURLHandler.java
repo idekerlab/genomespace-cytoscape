@@ -18,18 +18,18 @@ import org.genomespace.sws.GSLoadEventListener;
 import cytoscape.genomespace.context.GenomeSpaceContext;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
-import cytoscape.genomespace.task.LoadFileTaskFactory;
+import cytoscape.genomespace.task.BasicFileTaskFactory;
 import cytoscape.genomespace.task.SetFrameSessionTitleTask;
 
 public class CytoscapeGSURLHandler implements GSLoadEventListener {
 	private final DialogTaskManager dialogTaskManager;
-	private final LoadFileTaskFactory loadNetworkFileTaskFactory;
-	private final LoadFileTaskFactory loadSessionFileTaskFactory;
+	private final BasicFileTaskFactory loadNetworkFileTaskFactory;
+	private final BasicFileTaskFactory loadSessionFileTaskFactory;
 	private final JFrame frame;
 	private final GenomeSpaceContext gsContext;
 	
-	public CytoscapeGSURLHandler(DialogTaskManager dialogTaskManager, LoadFileTaskFactory loadNetworkFileTaskFactory, 
-			LoadFileTaskFactory loadSessionFileTaskFactory, JFrame frame, GenomeSpaceContext gsContext) {
+	public CytoscapeGSURLHandler(DialogTaskManager dialogTaskManager, BasicFileTaskFactory loadNetworkFileTaskFactory, 
+			BasicFileTaskFactory loadSessionFileTaskFactory, JFrame frame, GenomeSpaceContext gsContext) {
 		this.dialogTaskManager = dialogTaskManager;
 		this.loadNetworkFileTaskFactory = loadNetworkFileTaskFactory;
 		this.loadSessionFileTaskFactory = loadSessionFileTaskFactory;

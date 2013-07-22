@@ -18,7 +18,8 @@ public class LoginToGenomeSpaceAction extends AbstractCyAction {
 		// Set the menu you'd like here.  Plugins don't need
 		// to live in the Plugins menu, so choose whatever
 		// is appropriate!
-		setPreferredMenu("File.GenomeSpace[999]");
+		setPreferredMenu("Apps.GenomeSpace");
+		setMenuGravity(0.0f);
 		this.gsContext = gsContext;
 	}
 

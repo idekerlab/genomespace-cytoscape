@@ -3,13 +3,13 @@ package cytoscape.genomespace.action;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.AbstractCyAction;
+import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
@@ -20,30 +20,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.context.GenomeSpaceContext;
+import cytoscape.genomespace.task.BasicFileTaskFactory;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
-import cytoscape.genomespace.task.LoadFileTaskFactory;
-import cytoscape.genomespace.task.SetFrameSessionTitleTask;
 
 
-public class LoadSessionFromGenomeSpaceAction extends AbstractCyAction {
+public class ImportTableFromGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 7577788473487659L;
-	static final Logger logger = LoggerFactory.getLogger(LoadSessionFromGenomeSpaceAction.class);
+	private static final Logger logger = LoggerFactory.getLogger(ImportTableFromGenomeSpaceAction.class);
 	private final DialogTaskManager dialogTaskManager;
-	private final LoadFileTaskFactory loadSessionFileTaskFactory;
+	private final BasicFileTaskFactory importTableFileTaskFactory;
 	private final GenomeSpaceContext gsContext;
 	private final JFrame frame;
 	
-	
-	public LoadSessionFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, LoadFileTaskFactory loadSessionFileTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
-		super("Load Session...");
+	public ImportTableFromGenomeSpaceAction(CyApplicationManager cyApplicationManager, CyNetworkViewManager cyNetworkViewManager, DialogTaskManager dialogTaskManager, BasicFileTaskFactory importTableFileTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
+		super("GenomeSpace...", cyApplicationManager, "network", cyNetworkViewManager);
 
 		// Set the menu you'd like here.  Plugins don't need
 		// to live in the Plugins menu, so choose whatever
 		// is appropriate!
-		setPreferredMenu("File.Import.GenomeSpace");
+		setPreferredMenu("File.Import.Table");
+		setMenuGravity(1.3f);
 		this.dialogTaskManager = dialogTaskManager;
-		this.loadSessionFileTaskFactory = loadSessionFileTaskFactory;
+		this.importTableFileTaskFactory = importTableFileTaskFactory;
 		this.gsContext = gsContext;
 		this.frame = frame;
 	}
@@ -51,26 +50,22 @@ public class LoadSessionFromGenomeSpaceAction extends AbstractCyAction {
 	public void actionPerformed(ActionEvent e) {
 		try {
 			if(!gsContext.loginIfNotAlready()) return;
-			final GsSession session = gsContext.getSession();
+			final GsSession session = gsContext.getSession(); 
 			final DataManagerClient dataManagerClient = session.getDataManagerClient();
 
 			// Select the GenomeSpace file:
-			final List<String> acceptableExtensions = new ArrayList<String>();
-			acceptableExtensions.add("cys");
 			final GSFileBrowserDialog dialog =
-				new GSFileBrowserDialog(frame, dataManagerClient,
-							acceptableExtensions,
-							GSFileBrowserDialog.DialogType.FILE_SELECTION_DIALOG, "Load Session");
+					new GSFileBrowserDialog(frame, dataManagerClient,
+								GSFileBrowserDialog.DialogType.FILE_SELECTION_DIALOG, "Import Table from GenomeSpace");
 			final GSFileMetadata fileMetadata = dialog.getSelectedFileMetadata();
 			if (fileMetadata == null)
 				return;
 
 			// Download the GenomeSpace file:
-			final String fileName = fileMetadata.getName();
+			String fileName = fileMetadata.getName();
 			File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
 			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(session, fileMetadata, tempFile, true));
-			ti.append(loadSessionFileTaskFactory.createTaskIterator(tempFile));
-			ti.append(new SetFrameSessionTitleTask(frame, fileName));
+			ti.append(importTableFileTaskFactory.createTaskIterator(tempFile));
 			dialogTaskManager.execute(ti);
 			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
 		} catch (Exception ex) {
@@ -78,8 +73,7 @@ public class LoadSessionFromGenomeSpaceAction extends AbstractCyAction {
 			JOptionPane.showMessageDialog(frame,
 						      ex.getMessage(), "GenomeSpace Error",
 						      JOptionPane.ERROR_MESSAGE);
-		}
+		} 
 	}
 
 }
-

@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.AbstractCyAction;
 import org.cytoscape.task.write.ExportNetworkViewTaskFactory;
+import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
@@ -31,9 +32,9 @@ import cytoscape.genomespace.ui.NetworkTypeSelectionDialog;
  * then fill in your expected behavior in the actionPerformed()
  * method.
  */
-public class SaveNetworkToGenomeSpaceAction extends AbstractCyAction {
+public class ExportNetworkToGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 9988760123456789L;
-	private static final Logger logger = LoggerFactory.getLogger(SaveNetworkToGenomeSpaceAction.class);
+	private static final Logger logger = LoggerFactory.getLogger(ExportNetworkToGenomeSpaceAction.class);
 	private final CyApplicationManager cyApplicationManager;
 	private final DialogTaskManager dialogTaskManager;
 	private final ExportNetworkViewTaskFactory exportNetworkViewTaskFactory;
@@ -41,14 +42,15 @@ public class SaveNetworkToGenomeSpaceAction extends AbstractCyAction {
 	private final JFrame frame;
 	
 	
-	public SaveNetworkToGenomeSpaceAction(CyApplicationManager cyApplicationManager, DialogTaskManager dialogTaskManager, ExportNetworkViewTaskFactory exportNetworkViewTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
+	public ExportNetworkToGenomeSpaceAction(CyApplicationManager cyApplicationManager, CyNetworkViewManager cyNetworkViewManager,  DialogTaskManager dialogTaskManager, ExportNetworkViewTaskFactory exportNetworkViewTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
 		// Give your action a name here
-		super("Save Network As");
+		super("Network to GenomeSpace...", cyApplicationManager, "networkAndView", cyNetworkViewManager);
 
 		// Set the menu you'd like here.  Plugins don't need
 		// to live in the Plugins menu, so choose whatever
 		// is appropriate!
-		setPreferredMenu("File.Export.GenomeSpace");
+		setPreferredMenu("File.Export");
+		setMenuGravity(1.15f);
 		this.cyApplicationManager = cyApplicationManager;
 		this.dialogTaskManager = dialogTaskManager;
 		this.exportNetworkViewTaskFactory = exportNetworkViewTaskFactory;
@@ -72,7 +74,7 @@ public class SaveNetworkToGenomeSpaceAction extends AbstractCyAction {
 			final GSFileBrowserDialog dialog =
 				new GSFileBrowserDialog(frame, dataManagerClient,
 							acceptableExtensions,
-							GSFileBrowserDialog.DialogType.SAVE_AS_DIALOG, "Save Network");
+							GSFileBrowserDialog.DialogType.SAVE_AS_DIALOG, "Export Network to GenomeSpace");
 
 			String saveFileName = dialog.getSaveFileName();
 			if (saveFileName == null)

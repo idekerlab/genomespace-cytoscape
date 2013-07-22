@@ -6,18 +6,18 @@ import org.cytoscape.work.TaskFactory;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TunableSetter;
 
-public class LoadFileTaskFactory {
+public class BasicFileTaskFactory {
 	
 	private final TaskFactory taskFactory;
 	private final TunableSetter tunableSetter;
 	
-	public LoadFileTaskFactory(TaskFactory taskFactory, TunableSetter tunableSetter) {
+	public BasicFileTaskFactory(TaskFactory taskFactory, TunableSetter tunableSetter) {
 		this.taskFactory = taskFactory;
 		this.tunableSetter = tunableSetter;
 	}
 	
 	public TaskIterator createTaskIterator(File file) {
-		return new TaskIterator(new LoadFileTask(taskFactory, tunableSetter, file));
+		return new TaskIterator(new BasicFileTask(taskFactory, tunableSetter, file));
 	}
 
 }

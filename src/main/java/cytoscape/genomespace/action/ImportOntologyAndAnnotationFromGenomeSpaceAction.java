@@ -18,11 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-//public class LoadOntologyAndAnnotationFromGenomeSpace extends AbstractCyAction {
+//public class ImportOntologyAndAnnotationFromGenomeSpaceAction extends AbstractCyAction {
 //	private static final long serialVersionUID = 7571788473486759L;
-//	private static final Logger logger = LoggerFactory.getLogger(LoadOntologyAndAnnotationFromGenomeSpace.class);
+//	private static final Logger logger = LoggerFactory.getLogger(ImportOntologyAndAnnotationFromGenomeSpaceAction.class);
 //
-//	public LoadOntologyAndAnnotationFromGenomeSpace() {
+//	public ImportOntologyAndAnnotationFromGenomeSpaceAction() {
 //		super("Load Ontology and Annotations...");
 //
 //		// Set the menu you'd like here.  Plugins don't need

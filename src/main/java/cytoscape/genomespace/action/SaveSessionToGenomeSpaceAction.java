@@ -41,12 +41,13 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 	
 	public SaveSessionToGenomeSpaceAction(DialogTaskManager dialogTaskManager, SaveSessionAsTaskFactory saveSessionAsTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
 		// Give your action a name here
-		super("Save Session As");
+		super("Save to GenomeSpace...");
 
 		// Set the menu you'd like here.  Plugins don't need
 		// to live in the Plugins menu, so choose whatever
 		// is appropriate!
-		setPreferredMenu("File.Export.GenomeSpace");
+		setPreferredMenu("File");
+		setMenuGravity(3.2f);
 		this.dialogTaskManager = dialogTaskManager;
 		this.saveSessionAsTaskFactory = saveSessionAsTaskFactory;
 		this.gsContext = gsContext;
@@ -64,7 +65,7 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 			final GSFileBrowserDialog dialog =
 				new GSFileBrowserDialog(frame, dataManagerClient,
 							acceptableExtensions,
-							GSFileBrowserDialog.DialogType.SAVE_AS_DIALOG, "Save Session");
+							GSFileBrowserDialog.DialogType.SAVE_AS_DIALOG, "Save Session to GenomeSpace");
 			String saveFileName = dialog.getSaveFileName();
 			
 			if (saveFileName == null)
