@@ -67,11 +67,11 @@ public class OpenSessionFromGenomeSpaceAction extends AbstractCyAction {
 				return;
 
 			// Download the GenomeSpace file:
-			final String fileName = fileMetadata.getName();
-			File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
+			final String baseName = fileMetadata.getName();
+			File tempFile = new File(System.getProperty("java.io.tmpdir"), baseName);
 			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(session, fileMetadata, tempFile, true));
 			ti.append(openSessionFileTaskFactory.createTaskIterator(tempFile));
-			ti.append(new SetFrameSessionTitleTask(frame, fileName));
+			ti.append(new SetFrameSessionTitleTask(frame, baseName));
 			dialogTaskManager.execute(ti);
 			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
 		} catch (Exception ex) {

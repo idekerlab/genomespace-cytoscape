@@ -79,14 +79,11 @@ public class ExportNetworkToGenomeSpaceAction extends AbstractCyAction {
 			String saveFileName = dialog.getSaveFileName();
 			if (saveFileName == null)
 				return;
-
-			// Make sure the file name ends with the network type extension:
-			if (!saveFileName.toLowerCase().endsWith("." + extension))
-				saveFileName += "." + extension;
-
-			final File tempFile = new File(System.getProperty("java.io.tmpdir"), saveFileName);
+			
+			final String baseName = gsContext.baseName(saveFileName);
+			final File tempFile = new File(System.getProperty("java.io.tmpdir"), baseName);
 			TaskIterator ti = exportNetworkViewTaskFactory.createTaskIterator(cyApplicationManager.getCurrentNetworkView(), tempFile);
-			ti.append(new UploadFileToGenomeSpaceTask(session, tempFile, dialog.getSaveFileName()));
+			ti.append(new UploadFileToGenomeSpaceTask(session, tempFile, saveFileName));
             dialogTaskManager.execute(ti);
 			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
 		} catch (final Exception ex) {
