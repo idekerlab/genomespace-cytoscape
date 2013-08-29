@@ -50,11 +50,20 @@ public class CytoscapeGSURLHandler implements GSLoadEventListener {
 			if(!gsContext.loginIfNotAlready()) return;
 			GsSession session = gsContext.getSession();
 			DataManagerClient dmc = session.getDataManagerClient();
-			final String extension = gsContext.getExtension(url);
-            GSDataFormat dataFormat = null; 
+			GSFileMetadata fileMetadata = dmc.getMetadata(new URL(url));
+			if(fileMetadata == null)
+				return;
+			
+			GSDataFormat dataFormat = fileMetadata.getDataFormat();
+			final String extension;
+			if ( dataFormat != null && dataFormat.getFileExtension() != null ) 
+				extension = dataFormat.getFileExtension();
+			else
+				extension = gsContext.getExtension(fileMetadata.getName());
+			
 			if ( extension != null && extension.equalsIgnoreCase("adj") )
 				dataFormat = gsContext.findConversionFormat(gsContext.getSession().getDataManagerClient().listDataFormats(), "xgmml");
-			GSFileMetadata fileMetadata = dmc.getMetadata(new URL(url));
+			
 			final String fileName = fileMetadata.getName();
 			File tempFile = new File(System.getProperty("java.io.tmpdir"), fileName);
 			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(session, fileMetadata, dataFormat, tempFile, true));

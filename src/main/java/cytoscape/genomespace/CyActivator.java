@@ -99,7 +99,7 @@ public class CyActivator extends AbstractCyActivator {
 		Properties enableForNetwork = new Properties();
 		enableForNetwork.put("enableFor", "network");
 
-		ImportNetworkFromGenomeSpaceAction importNetworkFromGenomeSpaceAction = new ImportNetworkFromGenomeSpaceAction(dialogTaskManager, loadNetworkFileTaskFactory, gsContext, frame);
+		ImportNetworkFromGenomeSpaceAction importNetworkFromGenomeSpaceAction = new ImportNetworkFromGenomeSpaceAction(dialogTaskManager, loadNetworkFileTaskFactory, gsContext, bc, frame);
 		registerService(bc,importNetworkFromGenomeSpaceAction,CyAction.class, new Properties());
 
 		ImportTableFromGenomeSpaceAction importTableFromGenomeSpaceAction = new ImportTableFromGenomeSpaceAction(cyApplicationManager, cyNetworkViewManager, dialogTaskManager, loadTableFileTaskFactory, gsContext, frame);
