@@ -14,6 +14,7 @@ import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
+import org.genomespace.client.exceptions.GSClientException;
 import org.genomespace.client.ui.GSFileBrowserDialog;
 import org.genomespace.datamanager.core.GSFileMetadata;
 import org.slf4j.Logger;
@@ -72,13 +73,13 @@ public class OpenSessionFromGenomeSpaceAction extends AbstractCyAction {
 			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(session, fileMetadata, tempFile, true));
 			ti.append(openSessionFileTaskFactory.createTaskIterator(tempFile));
 			ti.append(new SetFrameSessionTitleTask(frame, baseName));
+			ti.append(new DeleteFileTask(tempFile));
 			dialogTaskManager.execute(ti);
-			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
-		} catch (Exception ex) {
+		} catch (GSClientException ex) {
 			logger.error("GenomeSpace failed", ex);
-			JOptionPane.showMessageDialog(frame,
-						      ex.getMessage(), "GenomeSpace Error",
-						      JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(frame, "<html>The GenomeSpace server is inaccessible or not responding properly at this time.<br/>" +
+					"Please check your Internet connection and try again.</html>", "GenomeSpace Error",
+			        JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

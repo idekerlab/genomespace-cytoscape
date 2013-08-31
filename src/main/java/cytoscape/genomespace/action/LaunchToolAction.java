@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import org.cytoscape.application.swing.AbstractCyAction;
 import org.genomespace.atm.model.WebToolDescriptor;
+import org.genomespace.client.exceptions.GSClientException;
 import org.genomespace.client.ui.BrowserLauncher;
 import org.genomespace.sws.SimpleWebServer;
 import org.slf4j.Logger;
@@ -41,11 +42,11 @@ public class LaunchToolAction extends AbstractCyAction {
 				logger.info("Launch URL is: "+ launchUrl);
 				BrowserLauncher.openURL(launchUrl);
 			}
-		} catch (Exception ex) {
+		} catch (GSClientException ex) {
 			logger.error("Launch failed", ex);
-			JOptionPane.showMessageDialog(frame,
-						      ex.getMessage(), "GenomeSpace Error",
-						      JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(frame, "<html>Unable to launch tool. The GenomeSpace server is inaccessible or not responding properly at this time.<br/>" +
+					"Please check your Internet connection and try again.</html>", "GenomeSpace Error",
+			        JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }

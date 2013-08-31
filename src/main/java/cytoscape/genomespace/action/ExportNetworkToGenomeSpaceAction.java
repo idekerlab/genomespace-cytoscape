@@ -3,20 +3,23 @@ package cytoscape.genomespace.action;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.AbstractCyAction;
-import org.cytoscape.task.write.ExportNetworkViewTaskFactory;
+import org.cytoscape.io.CyFileFilter;
+import org.cytoscape.io.write.CyNetworkViewWriterManager;
 import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
+import org.genomespace.client.exceptions.GSClientException;
 import org.genomespace.client.ui.GSFileBrowserDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import cytoscape.genomespace.context.GenomeSpaceContext;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.UploadFileToGenomeSpaceTask;
-import cytoscape.genomespace.ui.NetworkTypeSelectionDialog;
 
 
 /**
@@ -37,12 +39,12 @@ public class ExportNetworkToGenomeSpaceAction extends AbstractCyAction {
 	private static final Logger logger = LoggerFactory.getLogger(ExportNetworkToGenomeSpaceAction.class);
 	private final CyApplicationManager cyApplicationManager;
 	private final DialogTaskManager dialogTaskManager;
-	private final ExportNetworkViewTaskFactory exportNetworkViewTaskFactory;
+	private final CyNetworkViewWriterManager cyNetworkViewWriterManager;
 	private final GenomeSpaceContext gsContext;
 	private final JFrame frame;
 	
 	
-	public ExportNetworkToGenomeSpaceAction(CyApplicationManager cyApplicationManager, CyNetworkViewManager cyNetworkViewManager,  DialogTaskManager dialogTaskManager, ExportNetworkViewTaskFactory exportNetworkViewTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
+	public ExportNetworkToGenomeSpaceAction(CyApplicationManager cyApplicationManager, CyNetworkViewManager cyNetworkViewManager,  DialogTaskManager dialogTaskManager, CyNetworkViewWriterManager cyNetworkViewWriterManager, GenomeSpaceContext gsContext, JFrame frame) {
 		// Give your action a name here
 		super("Network to GenomeSpace...", cyApplicationManager, "networkAndView", cyNetworkViewManager);
 
@@ -53,7 +55,7 @@ public class ExportNetworkToGenomeSpaceAction extends AbstractCyAction {
 		setMenuGravity(1.15f);
 		this.cyApplicationManager = cyApplicationManager;
 		this.dialogTaskManager = dialogTaskManager;
-		this.exportNetworkViewTaskFactory = exportNetworkViewTaskFactory;
+		this.cyNetworkViewWriterManager = cyNetworkViewWriterManager;
 		this.gsContext = gsContext;
 		this.frame = frame;
 	}
@@ -63,17 +65,24 @@ public class ExportNetworkToGenomeSpaceAction extends AbstractCyAction {
 			if(!gsContext.loginIfNotAlready()) return;
 			final GsSession session = gsContext.getSession();
 			final DataManagerClient dataManagerClient = session.getDataManagerClient();
+			List<CyFileFilter> filters = cyNetworkViewWriterManager.getAvailableWriterFilters();
+			Map<String, CyFileFilter> filterMap = new TreeMap<String, CyFileFilter>();
+			String sifFilterDescription = null;
+			for (CyFileFilter filter: filters) {
+				filterMap.put(filter.getDescription(), filter);
+				if(filter.getExtensions().contains("sif"))
+					sifFilterDescription = filter.getDescription();
+			}
+			String formatDescriptor = (String) JOptionPane.showInputDialog(frame, "Select the export file format", "Export Network", 
+					JOptionPane.PLAIN_MESSAGE, null, filterMap.keySet().toArray(),
+					sifFilterDescription);
+			if(formatDescriptor == null)
+				return;
 			
-			String extension =
-					(new NetworkTypeSelectionDialog(frame)).getNetworkType();
-				if (extension == null)
-					return;
-				extension = extension.toLowerCase();
-			final List<String> acceptableExtensions = new ArrayList<String>();
-			acceptableExtensions.add(extension.toLowerCase());
+			CyFileFilter filter = filterMap.get(formatDescriptor);
 			final GSFileBrowserDialog dialog =
 				new GSFileBrowserDialog(frame, dataManagerClient,
-							acceptableExtensions,
+							filter.getExtensions(),
 							GSFileBrowserDialog.DialogType.SAVE_AS_DIALOG, "Export Network to GenomeSpace");
 
 			String saveFileName = dialog.getSaveFileName();
@@ -82,15 +91,18 @@ public class ExportNetworkToGenomeSpaceAction extends AbstractCyAction {
 			
 			final String baseName = gsContext.baseName(saveFileName);
 			final File tempFile = new File(System.getProperty("java.io.tmpdir"), baseName);
-			TaskIterator ti = exportNetworkViewTaskFactory.createTaskIterator(cyApplicationManager.getCurrentNetworkView(), tempFile);
+			TaskIterator ti = new TaskIterator(cyNetworkViewWriterManager.getWriter(cyApplicationManager.getCurrentNetworkView(), filter, tempFile));
 			ti.append(new UploadFileToGenomeSpaceTask(session, tempFile, saveFileName));
+			ti.append(new DeleteFileTask(tempFile));
             dialogTaskManager.execute(ti);
-			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
-		} catch (final Exception ex) {
+		} catch (GSClientException ex) {
 			logger.error("GenomeSpace failed", ex);
-			JOptionPane.showMessageDialog(frame,
-						      ex.getMessage(), "GenomeSpace Error",
-						      JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(frame, "<html>The GenomeSpace server is inaccessible or not responding properly at this time.<br/>" +
+					"Please check your Internet connection and try again.</html>", "GenomeSpace Error",
+			        JOptionPane.ERROR_MESSAGE);
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(frame, ex, "Exception",
+			        JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }

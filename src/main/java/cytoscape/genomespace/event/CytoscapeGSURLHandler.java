@@ -74,8 +74,8 @@ public class CytoscapeGSURLHandler implements GSLoadEventListener {
 			else {
 				ti.append(loadNetworkFileTaskFactory.createTaskIterator(tempFile));
 			}
+			ti.append(new DeleteFileTask(tempFile));
 			dialogTaskManager.execute(ti);
-			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
 		} catch ( Exception e ) { e.printStackTrace(); }
 	}
 }

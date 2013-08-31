@@ -17,6 +17,7 @@ import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
 import org.genomespace.client.GsSession;
+import org.genomespace.client.exceptions.GSClientException;
 import org.genomespace.client.ui.GSFileBrowserDialog;
 import org.genomespace.datamanager.core.GSDataFormat;
 import org.genomespace.datamanager.core.GSFileMetadata;
@@ -81,27 +82,27 @@ public class ImportNetworkFromGenomeSpaceAction extends AbstractCyAction {
 				return;
 		
 			GSDataFormat dataFormat = fileMetadata.getDataFormat();
-			final String extension;
-			if ( dataFormat != null && dataFormat.getFileExtension() != null ) 
-				extension = dataFormat.getFileExtension();
-			else
-				extension = gsContext.getExtension(fileMetadata.getName());
-			
-			if ( extension != null && extension.equalsIgnoreCase("adj") )
-				dataFormat = gsContext.findConversionFormat(gsContext.getSession().getDataManagerClient().listDataFormats(), "xgmml");
+			if ( dataFormat != null && dataFormat.getFileExtension() != null ) {
+				String extension = dataFormat.getFileExtension();
+				if ( extension != null && extension.equalsIgnoreCase("adj") )
+					dataFormat = gsContext.findConversionFormat(gsContext.getSession().getDataManagerClient().listDataFormats(), "xgmml");
+			}
 
 			// Download the GenomeSpace file into a temp file
 			final String baseName = fileMetadata.getName();
 			File tempFile = new File(System.getProperty("java.io.tmpdir"), baseName);
 			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(session, fileMetadata, dataFormat, tempFile, true));
 			ti.append(importNetworkFileTaskFactory.createTaskIterator(tempFile));
+			ti.append(new DeleteFileTask(tempFile));
 			dialogTaskManager.execute(ti);
-			dialogTaskManager.execute(new TaskIterator(new DeleteFileTask(tempFile)));
-		} catch (Exception ex) {
+		} catch (GSClientException ex) {
 			logger.error("GenomeSpace failed", ex);
-			JOptionPane.showMessageDialog(frame,
-						      ex.getMessage(), "GenomeSpace Error",
-						      JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(frame, "<html>The GenomeSpace server is inaccessible or not responding properly at this time.<br/>" +
+					"Please check your Internet connection and try again.</html>", "GenomeSpace Error",
+			        JOptionPane.ERROR_MESSAGE);
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(frame, ex, "Exception",
+			        JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }
