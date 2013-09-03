@@ -4,6 +4,7 @@ package cytoscape.genomespace.action;
 
 import java.awt.event.ActionEvent;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -27,9 +28,11 @@ public class LaunchToolAction extends AbstractCyAction {
 	private final WebToolDescriptor webTool;
 	private final JFrame frame;
 
-	public LaunchToolAction(WebToolDescriptor webTool, JFrame frame) {
+	public LaunchToolAction(WebToolDescriptor webTool, JFrame frame, ImageIcon icon) {
 		super(webTool.getName());
 		setPreferredMenu("Apps.GenomeSpace.Launch[1]");
+		putValue(SMALL_ICON, icon);
+
 		this.webTool = webTool;
 		this.frame = frame;
 	}

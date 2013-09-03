@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -21,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.context.GenomeSpaceContext;
+import cytoscape.genomespace.task.BasicFileTaskFactory;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
-import cytoscape.genomespace.task.BasicFileTaskFactory;
 import cytoscape.genomespace.task.SetFrameSessionTitleTask;
 
 
@@ -36,7 +37,7 @@ public class OpenSessionFromGenomeSpaceAction extends AbstractCyAction {
 	private final JFrame frame;
 	
 	
-	public OpenSessionFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, BasicFileTaskFactory openSessionFileTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
+	public OpenSessionFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, BasicFileTaskFactory openSessionFileTaskFactory, GenomeSpaceContext gsContext, JFrame frame, ImageIcon icon) {
 		super("Open from GenomeSpace...");
 
 		// Set the menu you'd like here.  Plugins don't need
@@ -44,6 +45,8 @@ public class OpenSessionFromGenomeSpaceAction extends AbstractCyAction {
 		// is appropriate!
 		setPreferredMenu("File");
 		setMenuGravity(1.1f);
+		putValue(SMALL_ICON, icon);
+
 		this.dialogTaskManager = dialogTaskManager;
 		this.openSessionFileTaskFactory = openSessionFileTaskFactory;
 		this.gsContext = gsContext;

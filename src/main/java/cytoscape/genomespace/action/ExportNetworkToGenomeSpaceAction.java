@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -44,7 +45,7 @@ public class ExportNetworkToGenomeSpaceAction extends AbstractCyAction {
 	private final JFrame frame;
 	
 	
-	public ExportNetworkToGenomeSpaceAction(CyApplicationManager cyApplicationManager, CyNetworkViewManager cyNetworkViewManager,  DialogTaskManager dialogTaskManager, CyNetworkViewWriterManager cyNetworkViewWriterManager, GenomeSpaceContext gsContext, JFrame frame) {
+	public ExportNetworkToGenomeSpaceAction(CyApplicationManager cyApplicationManager, CyNetworkViewManager cyNetworkViewManager,  DialogTaskManager dialogTaskManager, CyNetworkViewWriterManager cyNetworkViewWriterManager, GenomeSpaceContext gsContext, JFrame frame, ImageIcon icon) {
 		// Give your action a name here
 		super("Network to GenomeSpace...", cyApplicationManager, "networkAndView", cyNetworkViewManager);
 
@@ -53,6 +54,8 @@ public class ExportNetworkToGenomeSpaceAction extends AbstractCyAction {
 		// is appropriate!
 		setPreferredMenu("File.Export");
 		setMenuGravity(1.15f);
+		putValue(SMALL_ICON, icon);
+		
 		this.cyApplicationManager = cyApplicationManager;
 		this.dialogTaskManager = dialogTaskManager;
 		this.cyNetworkViewWriterManager = cyNetworkViewWriterManager;

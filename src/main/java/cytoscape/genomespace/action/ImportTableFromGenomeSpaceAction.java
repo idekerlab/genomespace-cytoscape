@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -43,7 +44,7 @@ public class ImportTableFromGenomeSpaceAction extends AbstractCyAction {
 	private final BundleContext bc;
 	private final JFrame frame;
 	
-	public ImportTableFromGenomeSpaceAction(CyApplicationManager cyApplicationManager, CyNetworkViewManager cyNetworkViewManager, DialogTaskManager dialogTaskManager, BasicFileTaskFactory importTableFileTaskFactory, GenomeSpaceContext gsContext, BundleContext bc, JFrame frame) {
+	public ImportTableFromGenomeSpaceAction(CyApplicationManager cyApplicationManager, CyNetworkViewManager cyNetworkViewManager, DialogTaskManager dialogTaskManager, BasicFileTaskFactory importTableFileTaskFactory, GenomeSpaceContext gsContext, BundleContext bc, JFrame frame, ImageIcon icon) {
 		super("GenomeSpace...", cyApplicationManager, "network", cyNetworkViewManager);
 
 		// Set the menu you'd like here.  Plugins don't need
@@ -51,6 +52,8 @@ public class ImportTableFromGenomeSpaceAction extends AbstractCyAction {
 		// is appropriate!
 		setPreferredMenu("File.Import.Table");
 		setMenuGravity(1.3f);
+		putValue(SMALL_ICON, icon);
+
 		this.dialogTaskManager = dialogTaskManager;
 		this.importTableFileTaskFactory = importTableFileTaskFactory;
 		this.gsContext = gsContext;

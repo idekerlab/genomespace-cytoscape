@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -40,7 +41,7 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 	private final JFrame frame;
 	
 	
-	public SaveSessionToGenomeSpaceAction(DialogTaskManager dialogTaskManager, SaveSessionAsTaskFactory saveSessionAsTaskFactory, GenomeSpaceContext gsContext, JFrame frame) {
+	public SaveSessionToGenomeSpaceAction(DialogTaskManager dialogTaskManager, SaveSessionAsTaskFactory saveSessionAsTaskFactory, GenomeSpaceContext gsContext, JFrame frame, ImageIcon icon) {
 		// Give your action a name here
 		super("Save to GenomeSpace...");
 
@@ -49,6 +50,8 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 		// is appropriate!
 		setPreferredMenu("File");
 		setMenuGravity(3.2f);
+		putValue(SMALL_ICON, icon);
+
 		this.dialogTaskManager = dialogTaskManager;
 		this.saveSessionAsTaskFactory = saveSessionAsTaskFactory;
 		this.gsContext = gsContext;

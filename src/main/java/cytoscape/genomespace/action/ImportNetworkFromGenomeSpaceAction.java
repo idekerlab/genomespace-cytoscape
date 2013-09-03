@@ -6,6 +6,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -41,7 +42,7 @@ public class ImportNetworkFromGenomeSpaceAction extends AbstractCyAction {
 	private final BundleContext bc;
 	private final JFrame frame;
 
-	public ImportNetworkFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, BasicFileTaskFactory importNetworkFileTaskFactory, GenomeSpaceContext gsContext, BundleContext bc, JFrame frame) {
+	public ImportNetworkFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, BasicFileTaskFactory importNetworkFileTaskFactory, GenomeSpaceContext gsContext, BundleContext bc, JFrame frame, ImageIcon icon) {
 		super("GenomeSpace...");
 
 		// Set the menu you'd like here.  Plugins don't need
@@ -49,6 +50,8 @@ public class ImportNetworkFromGenomeSpaceAction extends AbstractCyAction {
 		// is appropriate!
 		setPreferredMenu("File.Import.Network");
 		setMenuGravity(3.0f);
+		putValue(SMALL_ICON, icon);
+		
 		this.dialogTaskManager = dialogTaskManager;
 		this.importNetworkFileTaskFactory = importNetworkFileTaskFactory;
 		this.gsContext = gsContext;

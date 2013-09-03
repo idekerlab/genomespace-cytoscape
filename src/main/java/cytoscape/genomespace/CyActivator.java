@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 
@@ -23,7 +24,6 @@ import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TunableSetter;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.atm.model.WebToolDescriptor;
-import org.genomespace.client.ConfigurationUrls;
 import org.genomespace.client.GsSession;
 import org.genomespace.sws.SimpleWebServer;
 import org.osgi.framework.BundleContext;
@@ -52,6 +52,7 @@ public class CyActivator extends AbstractCyActivator {
 	private static final Logger logger = LoggerFactory.getLogger(LaunchToolAction.class);
 	private CySwingApplication cySwingApplication;
 	private CyServiceRegistrar cyServiceRegistrar;
+	private ImageIcon icon;
 	private SimpleWebServer sws;
 	private Set<LaunchToolAction> launchToolActions;
 	
@@ -63,13 +64,12 @@ public class CyActivator extends AbstractCyActivator {
 	public void start(BundleContext bc) throws Exception {
 		this.cySwingApplication = getService(bc, CySwingApplication.class);
 		this.cyServiceRegistrar = getService(bc, CyServiceRegistrar.class);
+		this.icon = new ImageIcon(getClass().getResource("/images/genomespace_icon.gif"));
 		
 		CyApplicationManager cyApplicationManager = getService(bc, CyApplicationManager.class);
 		CyNetworkViewManager cyNetworkViewManager = getService(bc, CyNetworkViewManager.class);
 		CyProperty<Properties> cytoscapePropertiesServiceRef = getService(bc, CyProperty.class,
 				"(cyPropertyName=commandline.props)");
-		String gsenv = cytoscapePropertiesServiceRef.getProperties().getProperty("genomespace.environment","dev").toString();
-		//ConfigurationUrls.init(gsenv);
 		
 		DialogTaskManager dialogTaskManager = getService(bc, DialogTaskManager.class);
 		TunableSetter tunableSetter = getService(bc, TunableSetter.class);
@@ -83,13 +83,9 @@ public class CyActivator extends AbstractCyActivator {
 		
 		// set up the URL loaders
 		CytoscapeGSURLHandler gsUrlHandler = new CytoscapeGSURLHandler(dialogTaskManager, loadNetworkFileTaskFactory, loadSessionFileTaskFactory, frame, gsContext);
-//		LoadCyTableFromURL loadNodeAttrURL = new LoadCyTableFromURL("node.cytable",Cytoscape.getNodeAttributes());
-//		LoadCyTableFromURL loadEdgeAttrURL = new LoadCyTableFromURL("edge.cytable",Cytoscape.getEdgeAttributes());
 		
 		sws = new SimpleWebServer(60161);
 		sws.registerListener(gsUrlHandler);
-//		sws.registerListener(loadNodeAttrURL);
-//		sws.registerListener(loadEdgeAttrURL);
 		sws.start();
 		
 		launchToolActions = new HashSet<LaunchToolAction>();
@@ -99,39 +95,28 @@ public class CyActivator extends AbstractCyActivator {
 		Properties enableForNetwork = new Properties();
 		enableForNetwork.put("enableFor", "network");
 
-		ImportNetworkFromGenomeSpaceAction importNetworkFromGenomeSpaceAction = new ImportNetworkFromGenomeSpaceAction(dialogTaskManager, loadNetworkFileTaskFactory, gsContext, bc, frame);
+		ImportNetworkFromGenomeSpaceAction importNetworkFromGenomeSpaceAction = new ImportNetworkFromGenomeSpaceAction(dialogTaskManager, loadNetworkFileTaskFactory, gsContext, bc, frame, icon);
 		registerService(bc,importNetworkFromGenomeSpaceAction,CyAction.class, new Properties());
 
-		ImportTableFromGenomeSpaceAction importTableFromGenomeSpaceAction = new ImportTableFromGenomeSpaceAction(cyApplicationManager, cyNetworkViewManager, dialogTaskManager, loadTableFileTaskFactory, gsContext, bc, frame);
+		ImportTableFromGenomeSpaceAction importTableFromGenomeSpaceAction = new ImportTableFromGenomeSpaceAction(cyApplicationManager, cyNetworkViewManager, dialogTaskManager, loadTableFileTaskFactory, gsContext, bc, frame, icon);
 		registerService(bc,importTableFromGenomeSpaceAction,CyAction.class, new Properties());
 		
-		ExportNetworkToGenomeSpaceAction exportNetworkToGenomeSpaceAction = new ExportNetworkToGenomeSpaceAction(cyApplicationManager, cyNetworkViewManager, dialogTaskManager, cyNetworkViewWriterManager, gsContext, frame);
+		ExportNetworkToGenomeSpaceAction exportNetworkToGenomeSpaceAction = new ExportNetworkToGenomeSpaceAction(cyApplicationManager, cyNetworkViewManager, dialogTaskManager, cyNetworkViewWriterManager, gsContext, frame, icon);
 		registerService(bc,exportNetworkToGenomeSpaceAction,CyAction.class, new Properties());
 
-//		ImportOntologyAndAnnotationFromGenomeSpaceAction importOntologyAndAnnotationFromGenomeSpaceAction =
-//		new ImportOntologyAndAnnotationFromGenomeSpaceAction();
-//		Cytoscape.getDesktop().getCyMenus().addAction(importOntologyAndAnnotationFromGenomeSpaceAction);
-		
-		OpenSessionFromGenomeSpaceAction openSessionFromGenomeSpaceAction = new OpenSessionFromGenomeSpaceAction(dialogTaskManager, loadSessionFileTaskFactory, gsContext, frame);
+		OpenSessionFromGenomeSpaceAction openSessionFromGenomeSpaceAction = new OpenSessionFromGenomeSpaceAction(dialogTaskManager, loadSessionFileTaskFactory, gsContext, frame, icon);
 		registerService(bc,openSessionFromGenomeSpaceAction,CyAction.class, new Properties());
 
-		SaveSessionToGenomeSpaceAction saveSessionToGenomeSpaceAction = new SaveSessionToGenomeSpaceAction(dialogTaskManager, saveSessionAsTaskFactory, gsContext, frame);
+		SaveSessionToGenomeSpaceAction saveSessionToGenomeSpaceAction = new SaveSessionToGenomeSpaceAction(dialogTaskManager, saveSessionAsTaskFactory, gsContext, frame, icon);
 		registerService(bc,saveSessionToGenomeSpaceAction,CyAction.class, new Properties());
 
-		LoginToGenomeSpaceAction loginToGenomeSpaceAction = new LoginToGenomeSpaceAction(gsContext);
+		LoginToGenomeSpaceAction loginToGenomeSpaceAction = new LoginToGenomeSpaceAction(gsContext, icon);
 		registerService(bc,loginToGenomeSpaceAction,CyAction.class, new Properties());
 
 		// load any initial arguments
-		String fileUrl = cytoscapePropertiesServiceRef.getProperties().getProperty("gs.network");
+		String fileUrl = cytoscapePropertiesServiceRef.getProperties().getProperty("gs.url");
 		if ( fileUrl != null ) {
 			gsUrlHandler.loadFromURL(fileUrl);
-		} else {
-
-//			String nodeTableProp = cytoscapePropertiesServiceRef.getProperties().getProperty("node.cytable");
-//			loadNodeAttrURL.loadTable(nodeTableProp);
-//
-//			String edgeTableProp = cytoscapePropertiesServiceRef.getProperties().getProperty("edge.cytable");
-//			loadEdgeAttrURL.loadTable(edgeTableProp);
 		}
 		updateMenus(gsContext.getSession());
 	}
@@ -146,7 +131,7 @@ public class CyActivator extends AbstractCyActivator {
 				for ( WebToolDescriptor webTool : session.getAnalysisToolManagerClient().getWebTools() ) {
 					if ( webTool.getName().equalsIgnoreCase("cytoscape") )
 						continue;
-					LaunchToolAction action = new LaunchToolAction(webTool, cySwingApplication.getJFrame());
+					LaunchToolAction action = new LaunchToolAction(webTool, cySwingApplication.getJFrame(), icon);
 					cyServiceRegistrar.registerAllServices(action, new Properties());
 					launchToolActions.add(action);
 				}
