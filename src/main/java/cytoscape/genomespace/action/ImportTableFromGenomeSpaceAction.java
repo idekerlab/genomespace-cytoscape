@@ -73,7 +73,7 @@ public class ImportTableFromGenomeSpaceAction extends AbstractCyAction {
 			for(ServiceReference readerServiceReference: readerServiceReferences) {
 				InputStreamTaskFactory tf = (InputStreamTaskFactory) bc.getService(readerServiceReference);
 				CyFileFilter filter = tf.getFileFilter();
-				if(filter.getDataCategory() == DataCategory.NETWORK)
+				if(filter.getDataCategory() == DataCategory.TABLE)
 					acceptableExtensions.addAll(filter.getExtensions());
 			}
 			
