@@ -129,7 +129,7 @@ public class CyActivator extends AbstractCyActivator {
 		try {
 			if(session.isLoggedIn()) {
 				for ( WebToolDescriptor webTool : session.getAnalysisToolManagerClient().getWebTools() ) {
-					if ( webTool.getName().equalsIgnoreCase("cytoscape") )
+					if ( webTool.getName().startsWith("Cytoscape") )
 						continue;
 					LaunchToolAction action = new LaunchToolAction(webTool, cySwingApplication.getJFrame(), icon);
 					cyServiceRegistrar.registerAllServices(action, new Properties());
