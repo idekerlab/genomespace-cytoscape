@@ -81,7 +81,7 @@ public class SaveSessionToGenomeSpaceAction extends AbstractCyAction {
 			TaskIterator ti = saveSessionAsTaskFactory.createTaskIterator(tempFile);
 			ti.append(new UploadFileToGenomeSpaceTask(session, tempFile, saveFileName));
 			ti.append(new SetFrameSessionTitleTask(frame, baseName));
-			ti.append(new TaskIterator(new DeleteFileTask(tempFile)));
+			ti.append(new DeleteFileTask(tempFile));
 			dialogTaskManager.execute(ti);
 		} catch (GSClientException ex) {
 			logger.error("GenomeSpace failed", ex);
