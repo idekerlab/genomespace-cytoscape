@@ -14,7 +14,7 @@
 	<groupId>cytoscape</groupId>
 	<artifactId>genomespace-cytoscape</artifactId>
 	<packaging>bundle</packaging>
-	<name>GenomeSpace for Cytoscape</name>
+	<name>GenomeSpace</name>
 	<version>2.0.0</version>
 
 	<build>
