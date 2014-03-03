@@ -11,13 +11,13 @@ import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.TaskMonitor;
 import org.cytoscape.work.TunableSetter;
 
-public class BasicFileTask extends AbstractTask {
+public class ImportFileTask extends AbstractTask {
 	
 	private final TaskFactory taskFactory;
 	private final TunableSetter tunableSetter;
 	private final File file;
 	
-	public BasicFileTask(TaskFactory taskFactory, TunableSetter tunableSetter, File file){
+	public ImportFileTask(TaskFactory taskFactory, TunableSetter tunableSetter, File file){
 		this.taskFactory = taskFactory;
 		this.tunableSetter = tunableSetter;
 		this.file = file;

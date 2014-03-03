@@ -10,12 +10,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import org.cytoscape.application.CyApplicationManager;
 import org.cytoscape.application.swing.AbstractCyAction;
 import org.cytoscape.io.CyFileFilter;
 import org.cytoscape.io.DataCategory;
 import org.cytoscape.io.read.InputStreamTaskFactory;
-import org.cytoscape.view.model.CyNetworkViewManager;
 import org.cytoscape.work.TaskIterator;
 import org.cytoscape.work.swing.DialogTaskManager;
 import org.genomespace.client.DataManagerClient;
@@ -30,32 +28,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.context.GenomeSpaceContext;
-import cytoscape.genomespace.task.BasicFileTaskFactory;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
+import cytoscape.genomespace.task.FileTaskFactory;
 
 
 public class ImportTableFromGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 7577788473487659L;
 	private static final Logger logger = LoggerFactory.getLogger(ImportTableFromGenomeSpaceAction.class);
 	private final DialogTaskManager dialogTaskManager;
-	private final BasicFileTaskFactory importTableFileTaskFactory;
+	private final FileTaskFactory loadTableFileTaskFactory;
 	private final GenomeSpaceContext gsContext;
 	private final BundleContext bc;
 	private final JFrame frame;
 	
-	public ImportTableFromGenomeSpaceAction(CyApplicationManager cyApplicationManager, CyNetworkViewManager cyNetworkViewManager, DialogTaskManager dialogTaskManager, BasicFileTaskFactory importTableFileTaskFactory, GenomeSpaceContext gsContext, BundleContext bc, JFrame frame, ImageIcon icon) {
-		super("GenomeSpace...", cyApplicationManager, "network", cyNetworkViewManager);
+	public ImportTableFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, FileTaskFactory loadTableFileTaskFactory, GenomeSpaceContext gsContext, BundleContext bc, JFrame frame, ImageIcon icon) {
+		super("GenomeSpace...");
 
 		// Set the menu you'd like here.  Plugins don't need
 		// to live in the Plugins menu, so choose whatever
 		// is appropriate!
 		setPreferredMenu("File.Import.Table");
-		setMenuGravity(1.3f);
+		setMenuGravity(4.0f);
 		putValue(SMALL_ICON, icon);
 
 		this.dialogTaskManager = dialogTaskManager;
-		this.importTableFileTaskFactory = importTableFileTaskFactory;
+		this.loadTableFileTaskFactory = loadTableFileTaskFactory;
 		this.gsContext = gsContext;
 		this.bc = bc;
 		this.frame = frame;
@@ -96,7 +94,7 @@ public class ImportTableFromGenomeSpaceAction extends AbstractCyAction {
 			String baseName = fileMetadata.getName();
 			File tempFile = new File(System.getProperty("java.io.tmpdir"), baseName);
 			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(session, fileMetadata, tempFile, true));
-			ti.append(importTableFileTaskFactory.createTaskIterator(tempFile));
+			ti.append(loadTableFileTaskFactory.createTaskIterator(tempFile));
 			ti.append(new DeleteFileTask(tempFile));
 			dialogTaskManager.execute(ti);
 		} catch (GSClientException ex) {

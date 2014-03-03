@@ -47,13 +47,13 @@ public class ExportNetworkToGenomeSpaceAction extends AbstractCyAction {
 	
 	public ExportNetworkToGenomeSpaceAction(CyApplicationManager cyApplicationManager, CyNetworkViewManager cyNetworkViewManager,  DialogTaskManager dialogTaskManager, CyNetworkViewWriterManager cyNetworkViewWriterManager, GenomeSpaceContext gsContext, JFrame frame, ImageIcon icon) {
 		// Give your action a name here
-		super("Network to GenomeSpace...", cyApplicationManager, "networkAndView", cyNetworkViewManager);
+		super("Network to GenomeSpace...", cyApplicationManager, "network", cyNetworkViewManager);
 
 		// Set the menu you'd like here.  Plugins don't need
 		// to live in the Plugins menu, so choose whatever
 		// is appropriate!
 		setPreferredMenu("File.Export");
-		setMenuGravity(1.15f);
+		setMenuGravity(1.11f);
 		putValue(SMALL_ICON, icon);
 		
 		this.cyApplicationManager = cyApplicationManager;
@@ -94,7 +94,7 @@ public class ExportNetworkToGenomeSpaceAction extends AbstractCyAction {
 			
 			final String baseName = gsContext.baseName(saveFileName);
 			final File tempFile = new File(System.getProperty("java.io.tmpdir"), baseName);
-			TaskIterator ti = new TaskIterator(cyNetworkViewWriterManager.getWriter(cyApplicationManager.getCurrentNetworkView(), filter, tempFile));
+			TaskIterator ti = new TaskIterator(cyNetworkViewWriterManager.getWriter(cyApplicationManager.getCurrentNetwork(), filter, tempFile));
 			ti.append(new UploadFileToGenomeSpaceTask(session, tempFile, saveFileName));
 			ti.append(new DeleteFileTask(tempFile));
             dialogTaskManager.execute(ti);

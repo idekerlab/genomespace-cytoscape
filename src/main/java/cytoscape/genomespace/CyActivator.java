@@ -10,9 +10,12 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 
 import org.cytoscape.application.CyApplicationManager;
+import org.cytoscape.application.CyVersion;
 import org.cytoscape.application.swing.CyAction;
 import org.cytoscape.application.swing.CySwingApplication;
 import org.cytoscape.io.write.CyNetworkViewWriterManager;
+import org.cytoscape.model.CyNetworkManager;
+import org.cytoscape.model.CyTableManager;
 import org.cytoscape.property.CyProperty;
 import org.cytoscape.service.util.AbstractCyActivator;
 import org.cytoscape.service.util.CyServiceRegistrar;
@@ -31,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.action.ExportNetworkToGenomeSpaceAction;
+import cytoscape.genomespace.action.ExportNetworkViewToGenomeSpaceAction;
 import cytoscape.genomespace.action.ImportNetworkFromGenomeSpaceAction;
 import cytoscape.genomespace.action.ImportTableFromGenomeSpaceAction;
 import cytoscape.genomespace.action.LaunchToolAction;
@@ -39,7 +43,9 @@ import cytoscape.genomespace.action.OpenSessionFromGenomeSpaceAction;
 import cytoscape.genomespace.action.SaveSessionToGenomeSpaceAction;
 import cytoscape.genomespace.context.GenomeSpaceContext;
 import cytoscape.genomespace.event.CytoscapeGSURLHandler;
-import cytoscape.genomespace.task.BasicFileTaskFactory;
+import cytoscape.genomespace.task.FileTaskFactory;
+import cytoscape.genomespace.task.ImportFileTaskFactory;
+import cytoscape.genomespace.task.OpenSessionFileTaskFactory;
 
 
 /**
@@ -61,28 +67,42 @@ public class CyActivator extends AbstractCyActivator {
 		super();
 	}
 
-	public void start(BundleContext bc) throws Exception {
+	public void start(final BundleContext bc) throws Exception {
 		this.cySwingApplication = getService(bc, CySwingApplication.class);
 		this.cyServiceRegistrar = getService(bc, CyServiceRegistrar.class);
 		this.icon = new ImageIcon(getClass().getResource("/images/genomespace_icon.gif"));
 		
-		CyApplicationManager cyApplicationManager = getService(bc, CyApplicationManager.class);
-		CyNetworkViewManager cyNetworkViewManager = getService(bc, CyNetworkViewManager.class);
-		CyProperty<Properties> cytoscapePropertiesServiceRef = getService(bc, CyProperty.class,
+		final CyApplicationManager cyApplicationManager = getService(bc, CyApplicationManager.class);
+		final CyNetworkManager cyNetworkManager = getService(bc, CyNetworkManager.class);
+		final CyNetworkViewManager cyNetworkViewManager = getService(bc, CyNetworkViewManager.class);
+		final CyTableManager cyTableManager = getService(bc, CyTableManager.class);
+		final CyProperty<Properties> cytoscapePropertiesServiceRef = getService(bc, CyProperty.class,
 				"(cyPropertyName=commandline.props)");
 		
-		DialogTaskManager dialogTaskManager = getService(bc, DialogTaskManager.class);
-		TunableSetter tunableSetter = getService(bc, TunableSetter.class);
-		BasicFileTaskFactory loadTableFileTaskFactory = new BasicFileTaskFactory(getService(bc, LoadTableFileTaskFactory.class), tunableSetter);
-		BasicFileTaskFactory loadNetworkFileTaskFactory = new BasicFileTaskFactory(getService(bc, LoadNetworkFileTaskFactory.class), tunableSetter);
-		BasicFileTaskFactory loadSessionFileTaskFactory = new BasicFileTaskFactory(getService(bc, OpenSessionTaskFactory.class), tunableSetter);
+		final DialogTaskManager dialogTaskManager = getService(bc, DialogTaskManager.class);
+		final TunableSetter tunableSetter = getService(bc, TunableSetter.class);
+		
+		// These wrapper classes are ugly hacks to work around breakage
+		// in several import/export task factories on some Cytoscape releases 
+		// and abstract this workaround from the actions
+		// For fixed Cytoscape releases, we'll use the task factories directly
+		
+		FileTaskFactory loadTableFileTaskFactory = new ImportFileTaskFactory
+				(getService(bc, LoadTableFileTaskFactory.class), tunableSetter);
+		
+		FileTaskFactory loadNetworkFileTaskFactory = new ImportFileTaskFactory
+				(getService(bc, LoadNetworkFileTaskFactory.class), tunableSetter);
+		
+		FileTaskFactory openSessionTaskFactory = new OpenSessionFileTaskFactory
+				(cyNetworkManager, cyTableManager, getService(bc, OpenSessionTaskFactory.class), tunableSetter);
+		
 		SaveSessionAsTaskFactory saveSessionAsTaskFactory = getService(bc, SaveSessionAsTaskFactory.class);
 		CyNetworkViewWriterManager cyNetworkViewWriterManager = getService(bc, CyNetworkViewWriterManager.class);
 		JFrame frame = cySwingApplication.getJFrame();
 		GenomeSpaceContext gsContext = new GenomeSpaceContext(cySwingApplication, this);
 		
 		// set up the URL loaders
-		CytoscapeGSURLHandler gsUrlHandler = new CytoscapeGSURLHandler(dialogTaskManager, loadNetworkFileTaskFactory, loadSessionFileTaskFactory, frame, gsContext);
+		CytoscapeGSURLHandler gsUrlHandler = new CytoscapeGSURLHandler(dialogTaskManager, loadNetworkFileTaskFactory, openSessionTaskFactory, frame, gsContext);
 		
 		sws = new SimpleWebServer(60161);
 		sws.registerListener(gsUrlHandler);
@@ -90,21 +110,19 @@ public class CyActivator extends AbstractCyActivator {
 		
 		launchToolActions = new HashSet<LaunchToolAction>();
 
-		// This action represents the actual behavior of the plugin.
-		
-		Properties enableForNetwork = new Properties();
-		enableForNetwork.put("enableFor", "network");
-
 		ImportNetworkFromGenomeSpaceAction importNetworkFromGenomeSpaceAction = new ImportNetworkFromGenomeSpaceAction(dialogTaskManager, loadNetworkFileTaskFactory, gsContext, bc, frame, icon);
 		registerService(bc,importNetworkFromGenomeSpaceAction,CyAction.class, new Properties());
 
-		ImportTableFromGenomeSpaceAction importTableFromGenomeSpaceAction = new ImportTableFromGenomeSpaceAction(cyApplicationManager, cyNetworkViewManager, dialogTaskManager, loadTableFileTaskFactory, gsContext, bc, frame, icon);
+		ImportTableFromGenomeSpaceAction importTableFromGenomeSpaceAction = new ImportTableFromGenomeSpaceAction(dialogTaskManager, loadTableFileTaskFactory, gsContext, bc, frame, icon);
 		registerService(bc,importTableFromGenomeSpaceAction,CyAction.class, new Properties());
 		
 		ExportNetworkToGenomeSpaceAction exportNetworkToGenomeSpaceAction = new ExportNetworkToGenomeSpaceAction(cyApplicationManager, cyNetworkViewManager, dialogTaskManager, cyNetworkViewWriterManager, gsContext, frame, icon);
 		registerService(bc,exportNetworkToGenomeSpaceAction,CyAction.class, new Properties());
 
-		OpenSessionFromGenomeSpaceAction openSessionFromGenomeSpaceAction = new OpenSessionFromGenomeSpaceAction(dialogTaskManager, loadSessionFileTaskFactory, gsContext, frame, icon);
+		ExportNetworkViewToGenomeSpaceAction exportNetworkViewToGenomeSpaceAction = new ExportNetworkViewToGenomeSpaceAction(cyApplicationManager, cyNetworkViewManager, dialogTaskManager, cyNetworkViewWriterManager, gsContext, frame, icon);
+		registerService(bc,exportNetworkViewToGenomeSpaceAction,CyAction.class, new Properties());
+		
+		OpenSessionFromGenomeSpaceAction openSessionFromGenomeSpaceAction = new OpenSessionFromGenomeSpaceAction(dialogTaskManager, openSessionTaskFactory, gsContext, frame, icon);
 		registerService(bc,openSessionFromGenomeSpaceAction,CyAction.class, new Properties());
 
 		SaveSessionToGenomeSpaceAction saveSessionToGenomeSpaceAction = new SaveSessionToGenomeSpaceAction(dialogTaskManager, saveSessionAsTaskFactory, gsContext, frame, icon);

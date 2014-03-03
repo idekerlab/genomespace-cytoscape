@@ -28,32 +28,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.context.GenomeSpaceContext;
-import cytoscape.genomespace.task.BasicFileTaskFactory;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
+import cytoscape.genomespace.task.FileTaskFactory;
 
 
 public class ImportNetworkFromGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 7577788473487659L;
 	private static final Logger logger = LoggerFactory.getLogger(ImportNetworkFromGenomeSpaceAction.class);
 	private final DialogTaskManager dialogTaskManager;
-	private final BasicFileTaskFactory importNetworkFileTaskFactory;
+	private final FileTaskFactory loadNetworkFileTaskFactory;
 	private final GenomeSpaceContext gsContext;
 	private final BundleContext bc;
 	private final JFrame frame;
 
-	public ImportNetworkFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, BasicFileTaskFactory importNetworkFileTaskFactory, GenomeSpaceContext gsContext, BundleContext bc, JFrame frame, ImageIcon icon) {
+	public ImportNetworkFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, FileTaskFactory loadNetworkFileTaskFactory, GenomeSpaceContext gsContext, BundleContext bc, JFrame frame, ImageIcon icon) {
 		super("GenomeSpace...");
 
 		// Set the menu you'd like here.  Plugins don't need
 		// to live in the Plugins menu, so choose whatever
 		// is appropriate!
 		setPreferredMenu("File.Import.Network");
-		setMenuGravity(3.0f);
+		setMenuGravity(4.0f);
 		putValue(SMALL_ICON, icon);
 		
 		this.dialogTaskManager = dialogTaskManager;
-		this.importNetworkFileTaskFactory = importNetworkFileTaskFactory;
+		this.loadNetworkFileTaskFactory = loadNetworkFileTaskFactory;
 		this.gsContext = gsContext;
 		this.bc = bc;
 		this.frame = frame;
@@ -95,7 +95,7 @@ public class ImportNetworkFromGenomeSpaceAction extends AbstractCyAction {
 			final String baseName = fileMetadata.getName();
 			File tempFile = new File(System.getProperty("java.io.tmpdir"), baseName);
 			TaskIterator ti = new TaskIterator(new DownloadFileFromGenomeSpaceTask(session, fileMetadata, dataFormat, tempFile, true));
-			ti.append(importNetworkFileTaskFactory.createTaskIterator(tempFile));
+			ti.append(loadNetworkFileTaskFactory.createTaskIterator(tempFile));
 			ti.append(new DeleteFileTask(tempFile));
 			dialogTaskManager.execute(ti);
 		} catch (GSClientException ex) {

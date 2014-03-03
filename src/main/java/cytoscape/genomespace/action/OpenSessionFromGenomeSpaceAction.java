@@ -22,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cytoscape.genomespace.context.GenomeSpaceContext;
-import cytoscape.genomespace.task.BasicFileTaskFactory;
 import cytoscape.genomespace.task.DeleteFileTask;
 import cytoscape.genomespace.task.DownloadFileFromGenomeSpaceTask;
+import cytoscape.genomespace.task.FileTaskFactory;
 import cytoscape.genomespace.task.SetFrameSessionTitleTask;
 
 
@@ -32,12 +32,12 @@ public class OpenSessionFromGenomeSpaceAction extends AbstractCyAction {
 	private static final long serialVersionUID = 7577788473487659L;
 	static final Logger logger = LoggerFactory.getLogger(OpenSessionFromGenomeSpaceAction.class);
 	private final DialogTaskManager dialogTaskManager;
-	private final BasicFileTaskFactory openSessionFileTaskFactory;
+	private final FileTaskFactory openSessionFileTaskFactory;
 	private final GenomeSpaceContext gsContext;
 	private final JFrame frame;
 	
 	
-	public OpenSessionFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, BasicFileTaskFactory openSessionFileTaskFactory, GenomeSpaceContext gsContext, JFrame frame, ImageIcon icon) {
+	public OpenSessionFromGenomeSpaceAction(DialogTaskManager dialogTaskManager, FileTaskFactory openSessionFileTaskFactory, GenomeSpaceContext gsContext, JFrame frame, ImageIcon icon) {
 		super("Open from GenomeSpace...");
 
 		// Set the menu you'd like here.  Plugins don't need
